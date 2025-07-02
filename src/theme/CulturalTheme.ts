@@ -1,5 +1,3 @@
-import { DefaultTheme } from 'react-native-paper';
-
 // Cultural color palette based on authentic Irish heritage
 export const CulturalColors = {
   // Primary heritage green - traditional Irish color
@@ -52,9 +50,7 @@ export const CulturalColors = {
 };
 
 export const CulturalTheme = {
-  ...DefaultTheme,
   colors: {
-    ...DefaultTheme.colors,
     primary: CulturalColors.heritageGreen,
     primaryContainer: CulturalColors.heritageGreenLight,
     secondary: CulturalColors.welcomeGold,
@@ -87,78 +83,103 @@ export const CulturalTheme = {
     backdrop: CulturalColors.overlay,
   },
   fonts: {
-    ...DefaultTheme.fonts,
     headlineLarge: {
-      fontFamily: 'System',
-      fontSize: 32,
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '2rem',
       fontWeight: '700',
-      lineHeight: 40,
+      lineHeight: '2.5rem',
     },
     headlineMedium: {
-      fontFamily: 'System',
-      fontSize: 28,
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '1.75rem',
       fontWeight: '600',
-      lineHeight: 36,
+      lineHeight: '2.25rem',
     },
     headlineSmall: {
-      fontFamily: 'System',
-      fontSize: 24,
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '1.5rem',
       fontWeight: '600',
-      lineHeight: 32,
+      lineHeight: '2rem',
     },
     titleLarge: {
-      fontFamily: 'System',
-      fontSize: 22,
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '1.375rem',
       fontWeight: '600',
-      lineHeight: 28,
+      lineHeight: '1.75rem',
     },
     titleMedium: {
-      fontFamily: 'System',
-      fontSize: 18,
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '1.125rem',
       fontWeight: '600',
-      lineHeight: 24,
+      lineHeight: '1.5rem',
     },
     titleSmall: {
-      fontFamily: 'System',
-      fontSize: 16,
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '1rem',
       fontWeight: '600',
-      lineHeight: 20,
+      lineHeight: '1.25rem',
     },
     bodyLarge: {
-      fontFamily: 'System',
-      fontSize: 16,
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '1rem',
       fontWeight: '400',
-      lineHeight: 24,
+      lineHeight: '1.5rem',
     },
     bodyMedium: {
-      fontFamily: 'System',
-      fontSize: 14,
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '0.875rem',
       fontWeight: '400',
-      lineHeight: 20,
+      lineHeight: '1.25rem',
     },
     bodySmall: {
-      fontFamily: 'System',
-      fontSize: 12,
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '0.75rem',
       fontWeight: '400',
-      lineHeight: 16,
+      lineHeight: '1rem',
     },
     labelLarge: {
-      fontFamily: 'System',
-      fontSize: 14,
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '0.875rem',
       fontWeight: '500',
-      lineHeight: 20,
+      lineHeight: '1.25rem',
     },
     labelMedium: {
-      fontFamily: 'System',
-      fontSize: 12,
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '0.75rem',
       fontWeight: '500',
-      lineHeight: 16,
+      lineHeight: '1rem',
     },
     labelSmall: {
-      fontFamily: 'System',
-      fontSize: 10,
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: '0.625rem',
       fontWeight: '500',
-      lineHeight: 16,
+      lineHeight: '1rem',
+    },
+  },
+  spacing: {
+    xs: '0.25rem',
+    small: '0.5rem',
+    medium: '1rem',
+    large: '1.5rem',
+    xl: '2rem',
+    xxl: '3rem',
+  },
+  borderRadius: {
+    small: '0.25rem',
+    medium: '0.5rem',
+    large: '0.75rem',
+    xl: '1rem',
+    round: '50rem',
+  },
+  elevation: {
+    low: {
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+    },
+    medium: {
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    },
+    high: {
+      boxShadow: '0 10px 15px rgba(0, 0, 0, 0.1)',
     },
   },
 };
@@ -182,27 +203,4 @@ export const CulturalBorderRadius = {
   round: 50,
 };
 
-// Cultural elevation/shadow
-export const CulturalElevation = {
-  low: {
-    shadowColor: CulturalColors.darkText,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  medium: {
-    shadowColor: CulturalColors.darkText,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  high: {
-    shadowColor: CulturalColors.darkText,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-};
+export default CulturalTheme;

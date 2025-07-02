@@ -1,273 +1,206 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuthStore } from '../stores/authStore';
-import { CulturalTheme } from '../theme/CulturalTheme';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import { motion } from 'framer-motion';
 
-export const HomeScreen: React.FC = () => {
-  const { user, isAuthenticated } = useAuthStore();
+const Container = styled.div`
+  min-height: calc(100vh - 80px);
+  padding: 2rem;
+  background: linear-gradient(135deg, ${props => props.theme.colors.background} 0%, ${props => props.theme.colors.surfaceVariant} 100%);
+`;
 
-  const quickActions = [
+const HeroSection = styled.section`
+  text-align: center;
+  padding: 4rem 0;
+  max-width: 800px;
+  margin: 0 auto;
+`;
+
+const Title = styled(motion.h1)`
+  font-size: 3rem;
+  font-weight: bold;
+  color: ${props => props.theme.colors.primary};
+  margin-bottom: 1rem;
+
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+`;
+
+const Subtitle = styled(motion.p)`
+  font-size: 1.25rem;
+  color: ${props => props.theme.colors.onSurfaceVariant};
+  margin-bottom: 2rem;
+  line-height: 1.6;
+`;
+
+const IrishQuote = styled(motion.div)`
+  background: ${props => props.theme.colors.surface};
+  padding: 2rem;
+  border-radius: ${props => props.theme.borderRadius.large};
+  margin: 3rem 0;
+  box-shadow: ${props => props.theme.elevation.medium.boxShadow};
+`;
+
+const QuoteText = styled.p`
+  font-size: 1.5rem;
+  font-style: italic;
+  color: ${props => props.theme.colors.primary};
+  text-align: center;
+  margin-bottom: 0.5rem;
+`;
+
+const QuoteTranslation = styled.p`
+  font-size: 1rem;
+  color: ${props => props.theme.colors.onSurfaceVariant};
+  text-align: center;
+`;
+
+const FeatureGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin: 4rem 0;
+`;
+
+const FeatureCard = styled(motion.div)`
+  background: ${props => props.theme.colors.surface};
+  padding: 2rem;
+  border-radius: ${props => props.theme.borderRadius.large};
+  text-align: center;
+  box-shadow: ${props => props.theme.elevation.medium.boxShadow};
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+`;
+
+const FeatureIcon = styled.div`
+  font-size: 3rem;
+  margin-bottom: 1rem;
+`;
+
+const FeatureTitle = styled.h3`
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: ${props => props.theme.colors.onSurface};
+  margin-bottom: 0.5rem;
+`;
+
+const FeatureDescription = styled.p`
+  color: ${props => props.theme.colors.onSurfaceVariant};
+  line-height: 1.5;
+`;
+
+const CTASection = styled.section`
+  text-align: center;
+  padding: 3rem 0;
+`;
+
+const CTAButton = styled(Link)`
+  display: inline-block;
+  background: ${props => props.theme.colors.primary};
+  color: ${props => props.theme.colors.onPrimary};
+  padding: 1rem 2rem;
+  border-radius: ${props => props.theme.borderRadius.large};
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  margin: 0 1rem;
+
+  &:hover {
+    background: ${props => props.theme.colors.primaryContainer};
+    color: ${props => props.theme.colors.onPrimaryContainer};
+    transform: translateY(-2px);
+  }
+`;
+
+const SecondaryButton = styled(CTAButton)`
+  background: transparent;
+  color: ${props => props.theme.colors.primary};
+  border: 2px solid ${props => props.theme.colors.primary};
+
+  &:hover {
+    background: ${props => props.theme.colors.primary};
+    color: ${props => props.theme.colors.onPrimary};
+  }
+`;
+
+const HomeScreen: React.FC = () => {
+  const features = [
     {
-      id: 'lesson',
-      title: 'Start Dancing',
-      subtitle: 'Begin your ceili journey',
       icon: '💃',
-      action: () => console.log('Navigate to lessons'),
+      title: 'Authentic Dances',
+      description: 'Learn traditional Irish ceili dances with step-by-step guidance and cultural context.'
     },
     {
-      id: 'practice',
-      title: 'Practice Irish',
-      subtitle: 'Improve pronunciation',
+      icon: '🎵',
+      title: 'Traditional Music',
+      description: 'Experience authentic Irish music and understand the connection between rhythm and movement.'
+    },
+    {
+      icon: '🏛️',
+      title: 'Cultural Heritage',
+      description: 'Discover the rich history and cultural significance behind every dance and tradition.'
+    },
+    {
       icon: '🗣️',
-      action: () => console.log('Navigate to practice'),
-    },
-    {
-      id: 'community',
-      title: 'Join Community',
-      subtitle: 'Connect with others',
-      icon: '👥',
-      action: () => console.log('Navigate to community'),
-    },
-    {
-      id: 'heritage',
-      title: 'Learn Heritage',
-      subtitle: 'Discover culture',
-      icon: '🏰',
-      action: () => console.log('Navigate to heritage'),
-    },
+      title: 'Irish Language',
+      description: 'Learn proper pronunciation of Irish terms and connect with your cultural roots.'
+    }
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.content}>
-        {/* Welcome Header */}
-        <View style={styles.welcomeSection}>
-          <Text style={styles.welcomeTitle}>
-            Fáilte{isAuthenticated && user ? `, ${user.email.split('@')[0]}!` : '!'}
-          </Text>
-          <Text style={styles.welcomeSubtitle}>
-            Welcome to your Irish ceili dance journey
-          </Text>
-          {isAuthenticated && user && (
-            <View style={styles.progressSection}>
-              <Text style={styles.progressLabel}>Cultural Confidence</Text>
-              <View style={styles.progressBar}>
-                <View 
-                  style={[
-                    styles.progressFill, 
-                    { width: `${user.culturalConfidenceScore || 0}%` }
-                  ]} 
-                />
-              </View>
-              <Text style={styles.progressText}>
-                {user.culturalConfidenceScore || 0}% Complete
-              </Text>
-            </View>
-          )}
-        </View>
+    <Container>
+      <HeroSection>
+        <Title
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          Céad Míle Fáilte
+        </Title>
+        <Subtitle
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          Welcome to CeiliClasses - where authentic Irish culture comes alive through dance, music, and heritage.
+        </Subtitle>
 
-        {/* Featured Content */}
-        <View style={styles.featuredSection}>
-          <Text style={styles.sectionTitle}>Today's Featured</Text>
-          <View style={styles.featuredCard}>
-            <View style={styles.featuredContent}>
-              <Text style={styles.featuredTitle}>The Siege of Ennis</Text>
-              <Text style={styles.featuredDescription}>
-                Learn Ireland's most popular ceili dance with step-by-step guidance
-              </Text>
-              <TouchableOpacity style={styles.featuredButton}>
-                <Text style={styles.featuredButtonText}>Start Learning</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+        <IrishQuote
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <QuoteText>"Ar scáth a chéile a mhaireann na daoine"</QuoteText>
+          <QuoteTranslation>In the shelter of each other, people live</QuoteTranslation>
+        </IrishQuote>
+      </HeroSection>
 
-        {/* Quick Actions */}
-        <View style={styles.actionsSection}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <View style={styles.actionsGrid}>
-            {quickActions.map((action) => (
-              <TouchableOpacity
-                key={action.id}
-                style={styles.actionCard}
-                onPress={action.action}
-                accessibilityLabel={`${action.title}: ${action.subtitle}`}
-                accessibilityRole="button"
-              >
-                <Text style={styles.actionIcon}>{action.icon}</Text>
-                <Text style={styles.actionTitle}>{action.title}</Text>
-                <Text style={styles.actionSubtitle}>{action.subtitle}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+      <FeatureGrid>
+        {features.map((feature, index) => (
+          <FeatureCard
+            key={index}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
+          >
+            <FeatureIcon>{feature.icon}</FeatureIcon>
+            <FeatureTitle>{feature.title}</FeatureTitle>
+            <FeatureDescription>{feature.description}</FeatureDescription>
+          </FeatureCard>
+        ))}
+      </FeatureGrid>
 
-        {/* Cultural Quote */}
-        <View style={styles.quoteSection}>
-          <Text style={styles.quote}>
-            "Ar scáth a chéile a mhaireann na daoine"
-          </Text>
-          <Text style={styles.quoteTranslation}>
-            In each other's shadow the people live
-          </Text>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      <CTASection>
+        <CTAButton to="/learn">Start Learning</CTAButton>
+        <SecondaryButton to="/heritage">Explore Heritage</SecondaryButton>
+      </CTASection>
+    </Container>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: CulturalTheme.colors.background,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: CulturalTheme.spacing.medium,
-  },
-  welcomeSection: {
-    paddingVertical: CulturalTheme.spacing.large,
-    alignItems: 'center',
-  },
-  welcomeTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: CulturalTheme.colors.primary,
-    textAlign: 'center',
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  welcomeSubtitle: {
-    fontSize: 16,
-    color: CulturalTheme.colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: CulturalTheme.spacing.medium,
-  },
-  progressSection: {
-    width: '100%',
-    alignItems: 'center',
-    marginTop: CulturalTheme.spacing.medium,
-  },
-  progressLabel: {
-    fontSize: 14,
-    color: CulturalTheme.colors.textSecondary,
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  progressBar: {
-    width: '80%',
-    height: 8,
-    backgroundColor: CulturalTheme.colors.backgroundSecondary,
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: CulturalTheme.colors.secondary,
-    borderRadius: 4,
-  },
-  progressText: {
-    fontSize: 12,
-    color: CulturalTheme.colors.textSecondary,
-    marginTop: CulturalTheme.spacing.small,
-  },
-  featuredSection: {
-    marginBottom: CulturalTheme.spacing.large,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: CulturalTheme.colors.textPrimary,
-    marginBottom: CulturalTheme.spacing.medium,
-  },
-  featuredCard: {
-    backgroundColor: CulturalTheme.colors.surface,
-    borderRadius: CulturalTheme.borderRadius.medium,
-    padding: CulturalTheme.spacing.large,
-    ...CulturalTheme.elevation.small,
-  },
-  featuredContent: {
-    alignItems: 'center',
-  },
-  featuredTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: CulturalTheme.colors.textPrimary,
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  featuredDescription: {
-    fontSize: 14,
-    color: CulturalTheme.colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: CulturalTheme.spacing.medium,
-  },
-  featuredButton: {
-    backgroundColor: CulturalTheme.colors.primary,
-    paddingHorizontal: CulturalTheme.spacing.large,
-    paddingVertical: CulturalTheme.spacing.medium,
-    borderRadius: CulturalTheme.borderRadius.small,
-  },
-  featuredButtonText: {
-    color: CulturalTheme.colors.surface,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  actionsSection: {
-    marginBottom: CulturalTheme.spacing.large,
-  },
-  actionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  actionCard: {
-    width: '48%',
-    backgroundColor: CulturalTheme.colors.surface,
-    borderRadius: CulturalTheme.borderRadius.medium,
-    padding: CulturalTheme.spacing.medium,
-    alignItems: 'center',
-    marginBottom: CulturalTheme.spacing.medium,
-    ...CulturalTheme.elevation.small,
-  },
-  actionIcon: {
-    fontSize: 32,
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  actionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: CulturalTheme.colors.textPrimary,
-    textAlign: 'center',
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  actionSubtitle: {
-    fontSize: 12,
-    color: CulturalTheme.colors.textSecondary,
-    textAlign: 'center',
-  },
-  quoteSection: {
-    backgroundColor: CulturalTheme.colors.backgroundSecondary,
-    borderRadius: CulturalTheme.borderRadius.medium,
-    padding: CulturalTheme.spacing.large,
-    alignItems: 'center',
-    marginBottom: CulturalTheme.spacing.large,
-  },
-  quote: {
-    fontSize: 16,
-    fontStyle: 'italic',
-    color: CulturalTheme.colors.primary,
-    textAlign: 'center',
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  quoteTranslation: {
-    fontSize: 14,
-    color: CulturalTheme.colors.textSecondary,
-    textAlign: 'center',
-  },
-});
+export default HomeScreen;
