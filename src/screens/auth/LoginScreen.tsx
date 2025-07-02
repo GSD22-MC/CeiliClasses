@@ -15,6 +15,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { CulturalTheme, CulturalSpacing, CulturalBorderRadius } from '../../theme/CulturalTheme';
 import { useAuthStore } from '../../stores/authStore';
+import { validateEmail, validatePassword, sanitizeInput, authRateLimiter } from '../../utils/validation';
 
 interface Props {
   navigation: StackNavigationProp<any>;
@@ -29,43 +30,54 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
   const { login, isLoading, error } = useAuthStore();
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email) {
-      setEmailError('Email is required');
+  const validateEmailInput = (emailInput: string) => {
+    const sanitized = sanitizeInput(emailInput);
+    const validation = validateEmail(sanitized);
+    
+    if (!validation.isValid) {
+      setEmailError(validation.error || 'Invalid email');
       return false;
     }
-    if (!emailRegex.test(email)) {
-      setEmailError('Please enter a valid email address');
-      return false;
-    }
+    
     setEmailError('');
     return true;
   };
 
-  const validatePassword = (password: string) => {
-    if (!password) {
-      setPasswordError('Password is required');
+  const validatePasswordInput = (passwordInput: string) => {
+    // Don't sanitize password as it may contain special characters intentionally
+    const validation = validatePassword(passwordInput);
+    
+    if (!validation.isValid) {
+      setPasswordError(validation.error || 'Invalid password');
       return false;
     }
-    if (password.length < 6) {
-      setPasswordError('Password must be at least 6 characters');
-      return false;
-    }
+    
     setPasswordError('');
     return true;
   };
 
   const handleLogin = async () => {
-    const isEmailValid = validateEmail(email);
-    const isPasswordValid = validatePassword(password);
+    // Rate limiting check
+    const identifier = sanitizeInput(email) || 'unknown';
+    if (!authRateLimiter.isAllowed(identifier)) {
+      const remainingTime = Math.ceil(authRateLimiter.getRemainingTime(identifier) / 1000);
+      Alert.alert(
+        'Too Many Attempts', 
+        `Please wait ${remainingTime} seconds before trying again.`
+      );
+      return;
+    }
+
+    const isEmailValid = validateEmailInput(email);
+    const isPasswordValid = validatePasswordInput(password);
 
     if (!isEmailValid || !isPasswordValid) {
       return;
     }
 
     try {
-      await login(email, password);
+      const sanitizedEmail = sanitizeInput(email);
+      await login(sanitizedEmail, password);
     } catch (err) {
       Alert.alert('Login Failed', 'Please check your credentials and try again.');
     }

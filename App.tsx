@@ -13,6 +13,7 @@ import { usabilityTestingService } from './src/services/UsabilityTestingService'
 import { CulturalTheme } from './src/theme/CulturalTheme';
 import { useAuthStore } from './src/stores/authStore';
 import { useCulturalContentStore } from './src/stores/culturalContentStore';
+import { ErrorBoundary } from './src/components/ErrorBoundary';
 
 // Screens
 import HomeScreen from './src/screens/HomeScreen';
@@ -45,6 +46,29 @@ const App: React.FC = () => {
   
   if (!isAuthenticated || !hasCompletedOnboarding) {
     return (
+      <ErrorBoundary>
+        <SafeAreaProvider>
+          <QueryClientProvider client={queryClient}>
+            <PaperProvider theme={CulturalTheme}>
+              <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+                <StatusBar 
+                  barStyle="light-content" 
+                  backgroundColor={CulturalTheme.colors.primary}
+                  translucent={Platform.OS === 'android'}
+                />
+                <NavigationContainer>
+                  <OnboardingNavigator />
+                </NavigationContainer>
+              </SafeAreaView>
+            </PaperProvider>
+          </QueryClientProvider>
+        </SafeAreaProvider>
+      </ErrorBoundary>
+    );
+  }
+
+  return (
+    <ErrorBoundary>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
           <PaperProvider theme={CulturalTheme}>
@@ -54,26 +78,6 @@ const App: React.FC = () => {
                 backgroundColor={CulturalTheme.colors.primary}
                 translucent={Platform.OS === 'android'}
               />
-              <NavigationContainer>
-                <OnboardingNavigator />
-              </NavigationContainer>
-            </SafeAreaView>
-          </PaperProvider>
-        </QueryClientProvider>
-      </SafeAreaProvider>
-    );
-  }
-
-  return (
-    <SafeAreaProvider>
-      <QueryClientProvider client={queryClient}>
-        <PaperProvider theme={CulturalTheme}>
-          <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-            <StatusBar 
-              barStyle="light-content" 
-              backgroundColor={CulturalTheme.colors.primary}
-              translucent={Platform.OS === 'android'}
-            />
           <Tab.Navigator
             screenOptions={({ route }) => ({
               tabBarIcon: ({ focused, color, size }) => {
@@ -162,6 +166,7 @@ const App: React.FC = () => {
         </PaperProvider>
       </QueryClientProvider>
     </SafeAreaProvider>
+    </ErrorBoundary>
   );
 };
 

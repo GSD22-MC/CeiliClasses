@@ -135,3 +135,23 @@ bundle-analyzer-report.html
 # Test results
 test-results/
 junit.xml
+
+# Security files
+*.pem
+*.key
+*.crt
+keystore
+*.jks
+*.p12
+*.mobileprovision
+*.keystore
+credentials/
+secrets/
+
+# Cache directories
+.cache/
+.parcel-cache/
+.prettiercache
+
+# React Query devtools
+.react-query/

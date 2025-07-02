@@ -124,13 +124,7 @@ export const PronunciationButton: React.FC<PronunciationButtonProps> = ({
         </View>
         
         {isPlaying && (
-          <View style={styles.playingIndicator}>
-            <View style={styles.soundWave}>
-              <View style={[styles.wave, styles.wave1]} />
-              <View style={[styles.wave, styles.wave2]} />
-              <View style={[styles.wave, styles.wave3]} />
-            </View>
-          </View>
+          <View style={styles.playingIndicator} />
         )}
       </Surface>
     </TouchableOpacity>
@@ -195,30 +189,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 3,
-    backgroundColor: CulturalTheme.colors.primaryContainer,
-  },
-  soundWave: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-    gap: 1,
-  },
-  wave: {
-    width: 2,
     backgroundColor: CulturalTheme.colors.primary,
-    borderRadius: 1,
-  },
-  wave1: {
-    height: '60%',
-    animationDelay: '0ms',
-  },
-  wave2: {
-    height: '100%',
-    animationDelay: '100ms',
-  },
-  wave3: {
-    height: '80%',
-    animationDelay: '200ms',
   },
 });

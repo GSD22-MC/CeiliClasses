@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { secureApiCall } from '../config/api';
+import { SecureStorageService } from '../services/SecureStorageService';
 
 export interface User {
   id: string;
@@ -50,23 +52,23 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   login: async (email: string, password: string) => {
     set({ isLoading: true, error: null });
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch('http://localhost:3001/api/v1/auth/login', {
+      const response = await secureApiCall('/api/v1/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-
       const data = await response.json();
       
-      await AsyncStorage.setItem('authToken', data.authToken);
-      await AsyncStorage.setItem('user', JSON.stringify(data.user));
+      // Store sensitive data securely
+      await SecureStorageService.storeAuthToken(data.authToken);
+      if (data.refreshToken) {
+        await SecureStorageService.storeRefreshToken(data.refreshToken);
+      }
+      
+      // Store non-sensitive user data in AsyncStorage
+      const publicUserData = { ...data.user };
+      delete publicUserData.sensitiveData; // Remove any sensitive fields
+      await AsyncStorage.setItem('user', JSON.stringify(publicUserData));
 
       set({
         user: data.user,
@@ -86,23 +88,23 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   register: async (email: string, password: string, culturalProfile: User['culturalProfile']) => {
     set({ isLoading: true, error: null });
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch('http://localhost:3001/api/v1/auth/register', {
+      const response = await secureApiCall('/api/v1/auth/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ email, password, culturalProfile }),
       });
 
-      if (!response.ok) {
-        throw new Error('Registration failed');
-      }
-
       const data = await response.json();
       
-      await AsyncStorage.setItem('authToken', data.authToken);
-      await AsyncStorage.setItem('user', JSON.stringify(data.user));
+      // Store sensitive data securely
+      await SecureStorageService.storeAuthToken(data.authToken);
+      if (data.refreshToken) {
+        await SecureStorageService.storeRefreshToken(data.refreshToken);
+      }
+      
+      // Store non-sensitive user data in AsyncStorage
+      const publicUserData = { ...data.user };
+      delete publicUserData.sensitiveData; // Remove any sensitive fields
+      await AsyncStorage.setItem('user', JSON.stringify(publicUserData));
 
       set({
         user: data.user,
@@ -120,7 +122,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
   },
 
   logout: async () => {
-    await AsyncStorage.removeItem('authToken');
+    // Clear all secure storage
+    await SecureStorageService.clearAll();
     await AsyncStorage.removeItem('user');
     
     set({
@@ -172,7 +175,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   loadAuthState: async () => {
     try {
-      const authToken = await AsyncStorage.getItem('authToken');
+      const authToken = await SecureStorageService.getAuthToken();
       const userString = await AsyncStorage.getItem('user');
       
       if (authToken && userString) {
@@ -185,7 +188,10 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         });
       }
     } catch (error) {
-      console.error('Failed to load auth state:', error);
+      console.error(__DEV__ && 'Failed to load auth state:', error);
+      // Clear potentially corrupted data
+      await SecureStorageService.clearAll();
+      await AsyncStorage.removeItem('user');
     }
   },
 
