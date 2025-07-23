@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { useNavigation } from '@react-navigation/native';
-import { CulturalTheme } from '../../theme/CulturalTheme';
 import { View, Text, TouchableOpacity, ScrollView } from '../../components/ui';
 
 const Container = styled(View)`
   flex: 1;
-  background-color: ${CulturalTheme.colors.background};
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 const ContentScrollView = styled(ScrollView)`
@@ -17,21 +16,21 @@ const ContentScrollView = styled(ScrollView)`
 const Title = styled(Text)`
   font-size: 28px;
   font-weight: bold;
-  color: ${CulturalTheme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
   text-align: center;
   margin-bottom: 16px;
 `;
 
 const Subtitle = styled(Text)`
   font-size: 16px;
-  color: ${CulturalTheme.colors.onSurface};
+  color: ${({ theme }) => theme.colors.onSurface};
   text-align: center;
   margin-bottom: 32px;
   line-height: 22px;
 `;
 
 const FeatureCard = styled(View)`
-  background-color: ${CulturalTheme.colors.surface};
+  background-color: ${({ theme }) => theme.colors.surface};
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 16px;
@@ -40,32 +39,32 @@ const FeatureCard = styled(View)`
 const FeatureTitle = styled(Text)`
   font-size: 18px;
   font-weight: 600;
-  color: ${CulturalTheme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
   margin-bottom: 8px;
 `;
 
 const FeatureDescription = styled(Text)`
   font-size: 14px;
-  color: ${CulturalTheme.colors.onSurface};
+  color: ${({ theme }) => theme.colors.onSurface};
   line-height: 20px;
   margin-bottom: 12px;
 `;
 
 const FeatureToggle = styled(TouchableOpacity)<{ enabled: boolean }>`
-  background-color: ${props => props.enabled ? CulturalTheme.colors.primary : CulturalTheme.colors.outline};
+  background-color: ${({ enabled, theme }) => enabled ? theme.colors.primary : theme.colors.outline};
   padding: 8px 16px;
   border-radius: 20px;
   align-self: flex-start;
 `;
 
 const ToggleText = styled(Text)`
-  color: ${CulturalTheme.colors.onPrimary};
+  color: ${({ theme }) => theme.colors.onPrimary};
   font-size: 12px;
   font-weight: 600;
 `;
 
 const ContinueButton = styled(TouchableOpacity)`
-  background-color: ${CulturalTheme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.primary};
   padding: 16px 32px;
   border-radius: 8px;
   align-items: center;
@@ -73,7 +72,7 @@ const ContinueButton = styled(TouchableOpacity)`
 `;
 
 const ContinueButtonText = styled(Text)`
-  color: ${CulturalTheme.colors.onPrimary};
+  color: ${({ theme }) => theme.colors.onPrimary};
   font-size: 16px;
   font-weight: 600;
 `;
@@ -120,6 +119,7 @@ const communityFeatures: CommunityFeature[] = [
 
 const CommunityIntegrationScreen: React.FC = () => {
   const navigation = useNavigation();
+  const theme = useTheme();
   const [enabledFeatures, setEnabledFeatures] = useState<Record<string, boolean>>(
     communityFeatures.reduce((acc, feature) => ({
       ...acc,
@@ -165,12 +165,12 @@ const CommunityIntegrationScreen: React.FC = () => {
         <View style={{ 
           padding: 20, 
           marginTop: 16, 
-          backgroundColor: CulturalTheme.colors.primaryContainer,
+          backgroundColor: theme.colors.primaryContainer,
           borderRadius: 12
         }}>
           <Text style={{ 
             fontSize: 16, 
-            color: CulturalTheme.colors.primary, 
+            color: theme.colors.primary, 
             textAlign: 'center',
             lineHeight: 22,
             fontWeight: '600'
@@ -179,7 +179,7 @@ const CommunityIntegrationScreen: React.FC = () => {
           </Text>
           <Text style={{ 
             fontSize: 14, 
-            color: CulturalTheme.colors.onPrimaryContainer, 
+            color: theme.colors.onPrimaryContainer, 
             textAlign: 'center',
             lineHeight: 20,
             marginTop: 8

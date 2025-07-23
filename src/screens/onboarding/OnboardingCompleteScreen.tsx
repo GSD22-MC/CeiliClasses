@@ -1,12 +1,11 @@
 import React from 'react';
-import styled from 'styled-components';
-import { CulturalTheme } from '../../theme/CulturalTheme';
+import styled, { useTheme } from 'styled-components';
 import { View, Text, TouchableOpacity, ScrollView } from '../../components/ui';
 import { useAuthStore } from '../../stores/authStore';
 
 const Container = styled(View)`
   flex: 1;
-  background-color: ${CulturalTheme.colors.background};
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 const ContentScrollView = styled(ScrollView)`
@@ -28,21 +27,21 @@ const CelebrationEmoji = styled(Text)`
 const Title = styled(Text)`
   font-size: 32px;
   font-weight: bold;
-  color: ${CulturalTheme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
   text-align: center;
   margin-bottom: 16px;
 `;
 
 const Subtitle = styled(Text)`
   font-size: 18px;
-  color: ${CulturalTheme.colors.onSurface};
+  color: ${({ theme }) => theme.colors.onSurface};
   text-align: center;
   margin-bottom: 32px;
   line-height: 24px;
 `;
 
 const WelcomeCard = styled(View)`
-  background-color: ${CulturalTheme.colors.primaryContainer};
+  background-color: ${({ theme }) => theme.colors.primaryContainer};
   padding: 24px;
   border-radius: 16px;
   margin-bottom: 24px;
@@ -51,20 +50,20 @@ const WelcomeCard = styled(View)`
 const WelcomeTitle = styled(Text)`
   font-size: 20px;
   font-weight: 600;
-  color: ${CulturalTheme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
   text-align: center;
   margin-bottom: 12px;
 `;
 
 const WelcomeText = styled(Text)`
   font-size: 16px;
-  color: ${CulturalTheme.colors.onPrimaryContainer};
+  color: ${({ theme }) => theme.colors.onPrimaryContainer};
   text-align: center;
   line-height: 22px;
 `;
 
 const NextStepsCard = styled(View)`
-  background-color: ${CulturalTheme.colors.surface};
+  background-color: ${({ theme }) => theme.colors.surface};
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 16px;
@@ -73,18 +72,18 @@ const NextStepsCard = styled(View)`
 const StepTitle = styled(Text)`
   font-size: 16px;
   font-weight: 600;
-  color: ${CulturalTheme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
   margin-bottom: 8px;
 `;
 
 const StepDescription = styled(Text)`
   font-size: 14px;
-  color: ${CulturalTheme.colors.onSurface};
+  color: ${({ theme }) => theme.colors.onSurface};
   line-height: 20px;
 `;
 
 const StartButton = styled(TouchableOpacity)`
-  background-color: ${CulturalTheme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.primary};
   padding: 20px 32px;
   border-radius: 12px;
   align-items: center;
@@ -92,13 +91,14 @@ const StartButton = styled(TouchableOpacity)`
 `;
 
 const StartButtonText = styled(Text)`
-  color: ${CulturalTheme.colors.onPrimary};
+  color: ${({ theme }) => theme.colors.onPrimary};
   font-size: 18px;
   font-weight: 600;
 `;
 
 const OnboardingCompleteScreen: React.FC = () => {
   const completeOnboarding = useAuthStore(state => state.completeOnboarding);
+  const theme = useTheme();
 
   const handleStartLearning = () => {
     completeOnboarding();
@@ -160,7 +160,7 @@ const OnboardingCompleteScreen: React.FC = () => {
         }}>
           <Text style={{ 
             fontSize: 14, 
-            color: CulturalTheme.colors.outline, 
+            color: theme.colors.outline, 
             textAlign: 'center',
             fontStyle: 'italic'
           }}>
