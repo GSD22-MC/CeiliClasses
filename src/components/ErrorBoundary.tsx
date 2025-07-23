@@ -16,13 +16,13 @@ interface State {
   errorInfo: React.ErrorInfo | null;
 }
 
-// Styled Components
+// Styled Components with direct CSS values (no theme dependency)
 const Container = styled(View)`
   flex: 1;
   justify-content: center;
   align-items: center;
-  background-color: ${({ theme }) => theme.colors.background};
-  padding: ${({ theme }) => theme.spacing.large};
+  background-color: #FFFFFF;
+  padding: 24px;
   min-height: 400px;
 `;
 
@@ -34,99 +34,99 @@ const ErrorCard = styled(CulturalCard)`
 
 const ErrorIcon = styled.div`
   font-size: 48px;
-  margin-bottom: ${({ theme }) => theme.spacing.large};
+  margin-bottom: 24px;
 `;
 
 const ErrorTitle = styled(Text)`
   font-size: 20px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.onSurface};
+  color: #212121;
   text-align: center;
-  margin-bottom: ${({ theme }) => theme.spacing.medium};
+  margin-bottom: 16px;
 `;
 
 const ErrorMessage = styled(Text)`
   font-size: 16px;
-  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  color: #757575;
   text-align: center;
   line-height: 1.5;
-  margin-bottom: ${({ theme }) => theme.spacing.large};
+  margin-bottom: 24px;
 `;
 
 const DebugInfo = styled(View)`
-  background-color: ${({ theme }) => theme.colors.surfaceVariant};
-  border-radius: ${({ theme }) => theme.borderRadius.small};
-  padding: ${({ theme }) => theme.spacing.medium};
-  margin-bottom: ${({ theme }) => theme.spacing.large};
+  background-color: #F8F9FA;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 24px;
   width: 100%;
 `;
 
 const DebugTitle = styled(Text)`
   font-size: 14px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.onSurface};
-  margin-bottom: ${({ theme }) => theme.spacing.small};
+  color: #212121;
+  margin-bottom: 8px;
 `;
 
 const DebugText = styled(Text)`
   font-size: 12px;
-  color: ${({ theme }) => theme.colors.error};
+  color: #F44336;
   font-family: monospace;
-  margin-bottom: ${({ theme }) => theme.spacing.small};
+  margin-bottom: 8px;
   word-break: break-all;
 `;
 
 const DebugStack = styled(Text)`
   font-size: 10px;
-  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  color: #757575;
   font-family: monospace;
   word-break: break-all;
 `;
 
 const RetryButton = styled(TouchableOpacity)`
-  background-color: ${({ theme }) => theme.colors.primary};
-  padding: ${({ theme }) => theme.spacing.medium} ${({ theme }) => theme.spacing.xxl};
-  border-radius: ${({ theme }) => theme.borderRadius.small};
+  background-color: #006633;
+  padding: 16px 48px;
+  border-radius: 4px;
   transition: all 0.2s ease;
   
   &:hover {
-    background-color: ${({ theme }) => theme.colors.primaryContainer};
+    background-color: #339966;
     transform: translateY(-1px);
   }
 `;
 
 const RetryButtonText = styled(Text)`
-  color: ${({ theme }) => theme.colors.onPrimary};
+  color: #FFFFFF;
   font-size: 16px;
   font-weight: 600;
 `;
 
 const MediaErrorContainer = styled(View)`
-  background-color: ${({ theme }) => theme.colors.surfaceVariant};
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
-  padding: ${({ theme }) => theme.spacing.large};
+  background-color: #F8F9FA;
+  border-radius: 8px;
+  padding: 24px;
   align-items: center;
-  margin: ${({ theme }) => theme.spacing.medium};
+  margin: 16px;
   text-align: center;
 `;
 
 const MediaErrorIcon = styled.div`
   font-size: 32px;
-  margin-bottom: ${({ theme }) => theme.spacing.medium};
+  margin-bottom: 16px;
 `;
 
 const MediaErrorTitle = styled(Text)`
   font-size: 16px;
   font-weight: 600;
-  color: ${({ theme }) => theme.colors.onSurface};
-  margin-bottom: ${({ theme }) => theme.spacing.small};
+  color: #212121;
+  margin-bottom: 8px;
 `;
 
 const MediaErrorMessage = styled(Text)`
   font-size: 14px;
-  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  color: #757575;
   text-align: center;
-  margin-bottom: ${({ theme }) => theme.spacing.medium};
+  margin-bottom: 16px;
 `;
 
 export class ErrorBoundary extends Component<Props, State> {
