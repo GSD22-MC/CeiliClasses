@@ -4,15 +4,13 @@ import * as THREE from 'three';
 
 interface DanceStep {
   stepNumber: number;
-  irishTerm: string;
-  phonetic: string;
-  english: string;
+  name: string;
   description: string;
   videoSegment: {
     startTime: number;
     endTime: number;
   };
-  culturalNote: string;
+  culturalNote?: string;
 }
 
 interface DanceFormation3DProps {
@@ -752,9 +750,9 @@ export const DanceFormation3D: React.FC<DanceFormation3DProps> = ({
       <div ref={mountRef} />
       
       <StepInfo>
-        <strong>Step {currentStepData?.stepNumber}: {currentStepData?.english}</strong>
+        <strong>Step {currentStepData?.stepNumber}: {currentStepData?.name}</strong>
         <br />
-        <em>{currentStepData?.irishTerm}</em>
+        <em>Dance Step</em>
         <br />
         Formation: {FORMATIONS[formation].name}
       </StepInfo>
