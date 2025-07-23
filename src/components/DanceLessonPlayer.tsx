@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import YouTube from 'react-youtube';
 import { CulturalTheme } from '../theme/CulturalTheme';
 import { PronunciationButton } from './PronunciationButton';
@@ -265,6 +265,28 @@ const MusicHeader = styled.div`
   text-align: center;
 `;
 
+const MusicPlayerButton = styled.button`
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: ${({ theme }) => theme.colors.secondary};
+  color: ${({ theme }) => theme.colors.onSecondary};
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1001;
+  
+  &:hover {
+    background: ${({ theme }) => theme.colors.secondaryContainer};
+    transform: scale(1.05);
+  }
+  
+  transition: all 0.2s ease;
+`;
+
 export const DanceLessonPlayer: React.FC<DanceLessonPlayerProps> = ({
   danceName,
   irishName,
@@ -456,25 +478,11 @@ export const DanceLessonPlayer: React.FC<DanceLessonPlayerProps> = ({
       {/* Music Player */}
       {musicVideo && (
         <>
-          <button
-            style={{
-              position: 'fixed',
-              bottom: '20px',
-              right: '20px',
-              background: CulturalTheme.colors.secondary,
-              color: CulturalTheme.colors.onSecondary,
-              border: 'none',
-              borderRadius: '50%',
-              width: '60px',
-              height: '60px',
-              fontSize: '24px',
-              cursor: 'pointer',
-              zIndex: 1001,
-            }}
+          <MusicPlayerButton
             onClick={() => setShowMusicPlayer(!showMusicPlayer)}
           >
             🎵
-          </button>
+          </MusicPlayerButton>
 
           {showMusicPlayer && (
             <MusicPlayer>
