@@ -1950,19 +1950,123 @@ export const ceiliDances: CeiliDance[] = [
     ],
     "culturalContext": "Competition figure choreography requiring 10-16 dancers minimum. Bridges traditional ceili dancing with contemporary performance demands. Modern development for WIDA competition standards. Maintains traditional ceili footwork while allowing contemporary formations and musical interpretation.",
     "region": "Traditional Irish"
+  },
+  {
+    "id": "sweets-of-may",
+    "name": {
+      "english": "Sweets of May",
+      "irish": "Mileseannaí na Bealtaine"
+    },
+    "difficulty": "intermediate",
+    "duration": 4,
+    "participants": 8,
+    "formation": "Eight dancers in couples, arranged in circle or longways formation for Bealtaine fertility celebration",
+    "music": {
+      "title": "Sweets of May",
+      "tempo": "Moderate jig time",
+      "timeSignature": "6/8"
+    },
+    "steps": [
+      {
+        "id": "sweets-of-may-step-1",
+        "name": {
+          "english": "May Crown Circle",
+          "irish": "Ciorcal Choróin na Bealtaine"
+        },
+        "description": "All dancers form circle holding hands, advance to center raising arms like flower petals (4 bars), retire opening like blooming flowers (4 bars). Ladies break away to dance around outside of men's circle (8 bars).",
+        "counts": 16,
+        "footwork": "Standard céilí footwork",
+        "handholds": "Hands joined in circle",
+        "tips": [
+          "Focus on flowering, blooming movements",
+          "Represent spring fertility and growth",
+          "Listen carefully to the jig rhythm"
+        ],
+        "commonMistakes": [
+          "Rushing the blooming gestures",
+          "Not maintaining circular formation",
+          "Missing the seasonal symbolism"
+        ]
+      },
+      {
+        "id": "sweets-of-may-step-2",
+        "name": {
+          "english": "Courtship Weaving",
+          "irish": "Fí na Suirghe"
+        },
+        "description": "Couples face each other across the set. Ladies advance and weave between opposite gentlemen in figure-eight pattern (8 bars), while gentlemen mark time and beckon. Return to partners with spinning turns (8 bars).",
+        "counts": 16,
+        "footwork": "Standard céilí footwork",
+        "handholds": "Various handholds as described",
+        "tips": [
+          "Weaving represents fertility symbolism",
+          "Gentlemen should be inviting and welcoming",
+          "Focus on courtship themes of Bealtaine"
+        ],
+        "commonMistakes": [
+          "Losing the weaving pattern",
+          "Not maintaining eye contact during courtship",
+          "Rushing through the symbolic movements"
+        ]
+      },
+      {
+        "id": "sweets-of-may-step-3",
+        "name": {
+          "english": "Maypole Dance",
+          "irish": "Rince Chrann na Bealtaine"
+        },
+        "description": "All dancers take colored ribbons (imaginary). Four couples dance around center point with interlacing ribbon patterns - over and under weaving (16 bars). Finish with ribbons 'braided' and couples in original positions.",
+        "counts": 16,
+        "footwork": "Standard céilí footwork",
+        "handholds": "Ribbon holds (imaginary)",
+        "tips": [
+          "Visualize holding colorful May ribbons",
+          "Create interlacing patterns like real Maypole",
+          "Celebrate fertility and community bonding"
+        ],
+        "commonMistakes": [
+          "Tangling the imaginary ribbons",
+          "Not following the over-under pattern",
+          "Missing the celebratory spirit"
+        ]
+      },
+      {
+        "id": "sweets-of-may-step-4",
+        "name": {
+          "english": "Harvest Promise",
+          "irish": "Gealltanas an Fhómhair"
+        },
+        "description": "Partners take both hands and turn three times in place representing the cycle of seasons (6 bars). All join hands in large circle and process sunwise (clockwise) around the space with promenade step (10 bars), finishing with arms raised toward the sky in blessing gesture (2 bars).",
+        "counts": 18,
+        "footwork": "Standard céilí footwork",
+        "handholds": "Both hands joined, then circle",
+        "tips": [
+          "Three turns represent the seasonal cycle",
+          "Sunwise movement follows ancient Celtic tradition",
+          "Final blessing connects earth to sky"
+        ],
+        "commonMistakes": [
+          "Not completing exactly three turns",
+          "Moving counter-clockwise instead of sunwise",
+          "Forgetting the final blessing gesture"
+        ]
+      }
+    ],
+    "culturalContext": "Traditional Bealtaine (May Day) celebration dance from Connacht province. Represents fertility, growth, and courtship themes central to ancient Celtic spring festival. Intricate weaving patterns symbolize the interconnection of community and the promise of harvest. Connected to ancient Celtic fertility celebrations and matchmaking traditions.",
+    "region": "Connacht"
   }
 ];
 
 // Dance categories for easy filtering and educational progression
 export const danceCategories = {
   // Historical dances (1500s-1800s)
-  historical: ["the-hey","the-trenchmor","every-mans-chance","waves-of-tory","hooks-and-eyes","pantomimic-dances"],
+  historical: ["the-hey","the-trenchmor","every-mans-chance","waves-of-tory","hooks-and-eyes","pantomimic-dances","sweets-of-may"],
   
   // Standard CLRG dances (most common)
   standard: ["walls-of-limerick","an-rince-mor","siege-of-ennis","four-hand-reel","eight-hand-reel","high-cauled-cap"],
   
   // Regional specialties
-  regional: ["waves-of-tory","three-tunes"],
+  regional: ["waves-of-tory","three-tunes","sweets-of-may"],
   
   // Pre-CLRG documentation (1900-1930)
   preClrg: ["fionnala","the-fairy-reel"],
@@ -1972,7 +2076,7 @@ export const danceCategories = {
   
   // By difficulty level
   beginner: ["walls-of-limerick","an-rince-mor","every-mans-chance"],
-  intermediate: ["siege-of-ennis","four-hand-reel","bridge-of-athlone","humours-of-bandon","the-hey","the-trenchmor","hooks-and-eyes","pantomimic-dances"],
+  intermediate: ["siege-of-ennis","four-hand-reel","bridge-of-athlone","humours-of-bandon","the-hey","the-trenchmor","hooks-and-eyes","pantomimic-dances","sweets-of-may"],
   advanced: ["eight-hand-reel","high-cauled-cap","waves-of-tory","fionnala","the-fairy-reel","three-tunes","modern-competition-choreography"]
 };
 
@@ -1986,7 +2090,7 @@ export const historicalTimeline = {
   traditionalFolk: { // 1700s-1800s
     period: '1700s-1800s', 
     description: 'Traditional folk dances from rural communities',
-    dances: ['waves-of-tory', 'hooks-and-eyes', 'every-mans-chance', 'pantomimic-dances']
+    dances: ['waves-of-tory', 'hooks-and-eyes', 'every-mans-chance', 'pantomimic-dances', 'sweets-of-may']
   },
   preClrgDocumentation: { // 1900-1930
     period: '1900-1930',
@@ -2009,16 +2113,17 @@ export const historicalTimeline = {
 export const regionalDistribution = {
   'Traditional Irish': 16,
   'County Armagh': 1,
-  'County Donegal': 1
+  'County Donegal': 1,
+  'Connacht': 1
 };
 
 // Statistics for dashboard display
 export const catalogStats = {
-  totalDances: 18,
+  totalDances: 19,
   historicalSpan: '500+ years (1500s-Present)',
   difficulties: {
     beginner: 3,
-    intermediate: 8, 
+    intermediate: 9, 
     advanced: 7
   },
   formations: {

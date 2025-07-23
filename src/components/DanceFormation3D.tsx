@@ -386,6 +386,14 @@ export const DanceFormation3D: React.FC<DanceFormation3DProps> = ({
         animateLinkArms(dancer, index, time);
       } else if (stepName.includes('lead round') || description.includes('lead around')) {
         animateLeadRound(dancer, index, time);
+      } else if (stepName.includes('may crown circle') || description.includes('flower petals')) {
+        animateMayCrownCircle(dancer, index, time);
+      } else if (stepName.includes('courtship weaving') || description.includes('figure-eight pattern')) {
+        animateCourtshipWeaving(dancer, index, time);
+      } else if (stepName.includes('maypole dance') || description.includes('interlacing ribbon patterns')) {
+        animateMaypoleDance(dancer, index, time);
+      } else if (stepName.includes('harvest promise') || description.includes('cycle of seasons')) {
+        animateHarvestPromise(dancer, index, time);
       } else if (stepName.includes('right and left') || description.includes('exchange places')) {
         animateRightAndLeft(dancer, index, time);
       } else if (stepName.includes('dance with opposite') || description.includes('opposite')) {
@@ -563,6 +571,129 @@ export const DanceFormation3D: React.FC<DanceFormation3DProps> = ({
     const coupleOffset = index % 2 === 0 ? -0.5 : 0.5;
     dancer.position.x += coupleOffset * Math.cos(angle + Math.PI / 2);
     dancer.position.z += coupleOffset * Math.sin(angle + Math.PI / 2);
+  };
+
+  // Sweets of May specific animations
+  const animateMayCrownCircle = (dancer: THREE.Group, index: number, time: number) => {
+    // Circle formation with blooming flower movement
+    const circleRadius = 3;
+    const angle = (index / dancersRef.current.length) * Math.PI * 2;
+    
+    // Expand and contract like blooming flower
+    const bloom = Math.sin(time * 2) * 0.5 + 1; // 0.5 to 1.5
+    const currentRadius = circleRadius * bloom;
+    
+    dancer.position.x = Math.cos(angle) * currentRadius;
+    dancer.position.z = Math.sin(angle) * currentRadius;
+    
+    // Raise arms like flower petals
+    const leftArm = dancer.children[2];
+    const rightArm = dancer.children[3];
+    if (leftArm && rightArm) {
+      const armHeight = Math.sin(time * 2) * 0.4 + 0.4; // Petal-like motion
+      leftArm.rotation.z = Math.PI / 4 + armHeight;
+      rightArm.rotation.z = -Math.PI / 4 - armHeight;
+    }
+    
+    // Face center for circle formation
+    dancer.rotation.y = angle + Math.PI;
+  };
+
+  const animateCourtshipWeaving = (dancer: THREE.Group, index: number, time: number) => {
+    // Figure-eight weaving pattern for courtship
+    const isLady = index % 2 === 1;
+    
+    if (isLady) {
+      // Ladies weave in figure-eight pattern
+      const figureEightRadius = 2;
+      const weavingSpeed = time * 1.5;
+      
+      dancer.position.x = Math.sin(weavingSpeed) * figureEightRadius;
+      dancer.position.z = Math.sin(weavingSpeed * 2) * figureEightRadius * 0.5;
+      dancer.rotation.y = weavingSpeed; // Turn while weaving
+      
+      // Graceful arm movements for courtship
+      const leftArm = dancer.children[2];
+      const rightArm = dancer.children[3];
+      if (leftArm && rightArm) {
+        leftArm.rotation.z = Math.PI / 6 + Math.sin(time * 3) * 0.3;
+        rightArm.rotation.z = -Math.PI / 6 - Math.cos(time * 3) * 0.3;
+      }
+    } else {
+      // Gentlemen mark time and beckon
+      const beckoning = Math.sin(time * 4) * 0.2;
+      dancer.position.y = Math.max(0, beckoning);
+      
+      // Beckoning arm gestures
+      const rightArm = dancer.children[3];
+      if (rightArm) {
+        rightArm.rotation.z = -Math.PI / 4 + Math.sin(time * 2) * 0.5; // Beckoning motion
+      }
+    }
+  };
+
+  const animateMaypoleDance = (dancer: THREE.Group, index: number, time: number) => {
+    // Maypole ribbon interlacing pattern
+    const poleRadius = 1.5;
+    const ribbonLength = 3;
+    const angle = time * 1.5 + (index * Math.PI / 4);
+    
+    // Over and under weaving motion
+    const overUnder = Math.sin(angle * 2) > 0;
+    const heightOffset = overUnder ? 0.3 : -0.3;
+    
+    // Circular motion around center "pole"
+    dancer.position.x = Math.cos(angle) * (poleRadius + Math.sin(time) * ribbonLength * 0.3);
+    dancer.position.z = Math.sin(angle) * (poleRadius + Math.cos(time) * ribbonLength * 0.3);
+    dancer.position.y = Math.max(0, heightOffset + Math.sin(time * 4) * 0.1);
+    
+    // Face the direction of movement
+    dancer.rotation.y = angle + Math.PI / 2;
+    
+    // Hold imaginary ribbons high
+    const leftArm = dancer.children[2];
+    const rightArm = dancer.children[3];
+    if (leftArm && rightArm) {
+      leftArm.rotation.z = Math.PI / 2; // Raised high
+      rightArm.rotation.z = -Math.PI / 2; // Raised high
+      leftArm.rotation.x = -Math.PI / 6; // Slightly forward
+      rightArm.rotation.x = -Math.PI / 6;
+    }
+  };
+
+  const animateHarvestPromise = (dancer: THREE.Group, index: number, time: number) => {
+    // Three turns representing seasonal cycle
+    const turnPhase = (time * 2) % (Math.PI * 6); // Three full turns
+    const isInTurning = turnPhase < Math.PI * 4; // First 2/3 of time
+    
+    if (isInTurning) {
+      // Partners turning together
+      const partner = index % 2 === 0 ? index + 1 : index - 1;
+      const turnRadius = 0.8;
+      const partnerAngle = turnPhase + (index % 2) * Math.PI; // Opposite sides
+      
+      dancer.position.x += Math.cos(partnerAngle) * turnRadius;
+      dancer.position.z += Math.sin(partnerAngle) * turnRadius;
+      dancer.rotation.y = partnerAngle + Math.PI / 2;
+    } else {
+      // Sunwise (clockwise) procession
+      const processionRadius = 4;
+      const processionAngle = time * 1 + (index * Math.PI / 4);
+      
+      dancer.position.x = Math.cos(processionAngle) * processionRadius;
+      dancer.position.z = Math.sin(processionAngle) * processionRadius;
+      dancer.rotation.y = processionAngle + Math.PI / 2;
+      
+      // Final blessing - arms raised to sky
+      const leftArm = dancer.children[2];
+      const rightArm = dancer.children[3];
+      if (leftArm && rightArm) {
+        leftArm.rotation.z = Math.PI / 2 + Math.sin(time * 2) * 0.1; // Raised to sky
+        rightArm.rotation.z = -Math.PI / 2 - Math.sin(time * 2) * 0.1;
+        leftArm.rotation.x = -Math.PI / 4; // Angled toward sky
+        rightArm.rotation.x = -Math.PI / 4;
+      }
+    }
   };
 
   // Reset dancer positions when step changes

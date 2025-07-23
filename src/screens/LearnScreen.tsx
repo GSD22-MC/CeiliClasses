@@ -23,6 +23,10 @@ const danceVideoMappings: Record<string, {
     frontView: '5IJYu2E_624', // An Rince Mór instruction video
     stepTimings: [0, 60, 120, 180, 240], // 5 steps - can be fine-tuned based on video content
   },
+  'sweets-of-may': {
+    frontView: 'iR1O3A6hyYw', // Sweets of May instruction video
+    stepTimings: [0, 75, 150, 225, 300], // 4 steps - can be fine-tuned based on video content
+  },
   // 
   // To add more videos, use this format:
   // 'dance-id': {
