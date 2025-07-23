@@ -19,6 +19,10 @@ const danceVideoMappings: Record<string, {
     // Based on the video, we can set more accurate step timings later
     stepTimings: [0, 45, 90, 135], // Rough estimates, can be fine-tuned
   },
+  'an-rince-mor': {
+    frontView: '5IJYu2E_624', // An Rince Mór instruction video
+    stepTimings: [0, 60, 120, 180, 240], // 5 steps - can be fine-tuned based on video content
+  },
   // 
   // To add more videos, use this format:
   // 'dance-id': {

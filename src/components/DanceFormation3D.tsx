@@ -378,6 +378,14 @@ export const DanceFormation3D: React.FC<DanceFormation3DProps> = ({
       // Step-specific animations
       if (stepName.includes('advance') && stepName.includes('retire')) {
         animateAdvanceRetire(dancer, index, time);
+      } else if (stepName.includes('ring to left and right') || description.includes('sidestep to left')) {
+        animateRingLeftRight(dancer, index, time);
+      } else if (stepName.includes('swing with') || description.includes('swing in place')) {
+        animateSwingInPlace(dancer, index, time);
+      } else if (stepName.includes('link arms') || description.includes('link right arm')) {
+        animateLinkArms(dancer, index, time);
+      } else if (stepName.includes('lead round') || description.includes('lead around')) {
+        animateLeadRound(dancer, index, time);
       } else if (stepName.includes('right and left') || description.includes('exchange places')) {
         animateRightAndLeft(dancer, index, time);
       } else if (stepName.includes('dance with opposite') || description.includes('opposite')) {
@@ -490,6 +498,71 @@ export const DanceFormation3D: React.FC<DanceFormation3DProps> = ({
       leftArm.rotation.z = Math.PI / 6 + Math.sin(time * 3 + stepOffset) * 0.2;
       rightArm.rotation.z = -Math.PI / 6 - Math.sin(time * 3 + stepOffset) * 0.2;
     }
+  };
+
+  // An Rince Mór specific animations
+  const animateRingLeftRight = (dancer: THREE.Group, index: number, time: number) => {
+    const cycle = Math.sin(time * 1.5) * 0.5 + 0.5; // 0 to 1
+    const isMovingLeft = cycle > 0.5;
+    
+    // Ring formation - dancers move as a group left and right
+    if (isMovingLeft) {
+      dancer.position.x += Math.sin(time * 1.5) * 1.5;
+    } else {
+      dancer.position.x -= Math.sin(time * 1.5) * 1.5;
+    }
+    
+    // Slight forward/back movement to show ring formation
+    dancer.position.z += Math.cos(time * 1.5) * 0.3;
+  };
+
+  const animateSwingInPlace = (dancer: THREE.Group, index: number, time: number) => {
+    // Swing in place - clockwise circular motion but staying in general area
+    const swingRadius = 0.8;
+    const angle = time * 2 + (index * Math.PI / 3); // Different starting points for each dancer
+    
+    dancer.position.x += Math.cos(angle) * swingRadius;
+    dancer.position.z += Math.sin(angle) * swingRadius;
+    dancer.rotation.y = angle + Math.PI / 2; // Face direction of movement
+  };
+
+  const animateLinkArms = (dancer: THREE.Group, index: number, time: number) => {
+    // Chain-like movement representing arm linking
+    const isEven = index % 2 === 0;
+    const linkAngle = time * 2.5 + (isEven ? 0 : Math.PI);
+    
+    // Move in linking pattern
+    dancer.position.x += Math.cos(linkAngle) * 1.2;
+    dancer.position.z += Math.sin(linkAngle) * 1.2;
+    
+    // Rotate to face linking direction
+    dancer.rotation.y = linkAngle;
+    
+    // Arm gestures for linking
+    const leftArm = dancer.children[2];
+    const rightArm = dancer.children[3];
+    if (leftArm && rightArm) {
+      leftArm.rotation.z = Math.PI / 4 + Math.sin(time * 3) * 0.3; // Extended for linking
+      rightArm.rotation.z = -Math.PI / 4 - Math.sin(time * 3) * 0.3;
+    }
+  };
+
+  const animateLeadRound = (dancer: THREE.Group, index: number, time: number) => {
+    // Lead around - couples move in large circle formation
+    const leadRadius = 3;
+    const angle = time * 1.5 + (index * Math.PI / 3);
+    
+    // Large circular motion
+    dancer.position.x = Math.cos(angle) * leadRadius;
+    dancer.position.z = Math.sin(angle) * leadRadius;
+    
+    // Face forward in direction of travel
+    dancer.rotation.y = angle + Math.PI / 2;
+    
+    // Couple connection - pairs stay close
+    const coupleOffset = index % 2 === 0 ? -0.5 : 0.5;
+    dancer.position.x += coupleOffset * Math.cos(angle + Math.PI / 2);
+    dancer.position.z += coupleOffset * Math.sin(angle + Math.PI / 2);
   };
 
   // Reset dancer positions when step changes
