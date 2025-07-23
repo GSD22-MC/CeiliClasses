@@ -65,20 +65,21 @@ const App: React.FC = () => {
     console.log('CeiliClasses Web App Initialized');
   }, []);
   
-  if (!isAuthenticated || !hasCompletedOnboarding) {
-    return (
-      <ThemeProvider theme={CulturalTheme}>
-        <QueryClientProvider client={queryClient}>
-          <GlobalStyle />
-          <Router>
-            <AppContainer>
-              <OnboardingNavigator />
-            </AppContainer>
-          </Router>
-        </QueryClientProvider>
-      </ThemeProvider>
-    );
-  }
+  // Temporarily bypass authentication for development
+  // if (!isAuthenticated || !hasCompletedOnboarding) {
+  //   return (
+  //     <ThemeProvider theme={CulturalTheme}>
+  //       <QueryClientProvider client={queryClient}>
+  //         <GlobalStyle />
+  //         <Router>
+  //           <AppContainer>
+  //             <OnboardingNavigator />
+  //           </AppContainer>
+  //         </Router>
+  //       </QueryClientProvider>
+  //     </ThemeProvider>
+  //   );
+  // }
 
   return (
     <ThemeProvider theme={CulturalTheme}>
