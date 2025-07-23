@@ -18,6 +18,17 @@ interface DanceLesson extends CeiliDance {
 
 const mapDanceToLesson = (dance: CeiliDance): DanceLesson => ({
   ...dance,
+  // Convert steps from old format to new format
+  steps: dance.steps.map((step: any, index: number) => ({
+    stepNumber: index + 1,
+    name: typeof step.name === 'object' ? step.name.english : step.name,
+    description: step.description,
+    videoSegment: {
+      startTime: index * 30, // 30 seconds per step
+      endTime: (index + 1) * 30,
+    },
+    culturalNote: step.tips ? step.tips[0] : undefined,
+  })),
   videoStreams: {
     frontView: `${dance.id}_front`, // Replace with actual YouTube video IDs
     sideView: `${dance.id}_side`,
@@ -237,7 +248,6 @@ export const LearnScreen: React.FC = () => {
       <LessonHeader>
         <LessonTitleContainer>
           <LessonTitle>{item.name.english}</LessonTitle>
-          <LessonIrishTitle>{item.name.irish}</LessonIrishTitle>
         </LessonTitleContainer>
         <DifficultyBadge backgroundColor={getDifficultyColor(item.difficulty, theme)}>
           <DifficultyText>{item.difficulty}</DifficultyText>
@@ -273,13 +283,11 @@ export const LearnScreen: React.FC = () => {
             </BackButton>
             <HeaderTitleContainer>
               <HeaderTitle>{selectedLesson.name.english}</HeaderTitle>
-              <HeaderSubtitle>{selectedLesson.name.irish}</HeaderSubtitle>
             </HeaderTitleContainer>
           </Header>
           
           <DanceLessonPlayer
             danceName={selectedLesson.name.english}
-            irishName={selectedLesson.name.irish}
             videoStreams={selectedLesson.videoStreams}
             musicVideo={selectedLesson.musicVideo}
             steps={selectedLesson.steps}
@@ -308,7 +316,7 @@ export const LearnScreen: React.FC = () => {
       <SafeAreaView>
         <Content>
           <HeaderSection>
-            <ScreenTitle>Foghlaim (Learn)</ScreenTitle>
+            <ScreenTitle>Learn</ScreenTitle>
             <ScreenSubtitle>
               Master authentic Irish ceili dances with step-by-step guidance
             </ScreenSubtitle>

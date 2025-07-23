@@ -1,25 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled, { useTheme } from 'styled-components';
 import YouTube from 'react-youtube';
-import { PronunciationButton } from './PronunciationButton';
 import { DanceFormation3D } from './DanceFormation3D';
 
 interface DanceStep {
   stepNumber: number;
-  irishTerm: string;
-  phonetic: string;
-  english: string;
+  name: string;
   description: string;
   videoSegment: {
     startTime: number;
     endTime: number;
   };
-  culturalNote: string;
+  culturalNote?: string;
 }
 
 interface DanceLessonPlayerProps {
   danceName: string;
-  irishName: string;
   videoStreams: {
     frontView: string; // YouTube video ID
     sideView: string;  // YouTube video ID
@@ -288,7 +284,6 @@ const MusicPlayerButton = styled.button`
 
 export const DanceLessonPlayer: React.FC<DanceLessonPlayerProps> = ({
   danceName,
-  irishName,
   videoStreams,
   musicVideo,
   steps,
@@ -350,7 +345,7 @@ export const DanceLessonPlayer: React.FC<DanceLessonPlayerProps> = ({
 
       if (newCompletedSteps.length === steps.length) {
         alert(
-          `Maith thú! (Well done!) You've completed learning ${danceName}. You now know a traditional Irish ceili dance!`
+          `Well done! You've completed learning ${danceName}. You now know a traditional Irish ceili dance!`
         );
         onLessonComplete?.();
       } else if (currentStep < steps.length - 1) {
@@ -429,15 +424,9 @@ export const DanceLessonPlayer: React.FC<DanceLessonPlayerProps> = ({
         <StepInfo>
           <StepHeader>
             <StepNumber>Step {currentStepData.stepNumber}</StepNumber>
-            <StepTitle>{currentStepData.english}</StepTitle>
+            <StepTitle>{currentStepData.name}</StepTitle>
             {completedSteps.includes(currentStep) && <span>✅</span>}
           </StepHeader>
-
-          <PronunciationButton
-            text={`${currentStepData.irishTerm} (${currentStepData.phonetic})`}
-            audioUrl={`https://example.com/audio/${currentStepData.irishTerm.toLowerCase()}.mp3`}
-            size="medium"
-          />
 
           <StepDescription>{currentStepData.description}</StepDescription>
 

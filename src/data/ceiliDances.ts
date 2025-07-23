@@ -7,7 +7,6 @@ export interface CeiliDance {
   id: string;
   name: {
     english: string;
-    irish: string;
   };
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   duration: number; // minutes
@@ -26,17 +25,14 @@ export interface CeiliDance {
 }
 
 export interface CeiliStep {
-  id: string;
-  name: {
-    english: string;
-    irish: string;
-  };
+  stepNumber: number;
+  name: string;
   description: string;
-  counts: number;
-  footwork: string;
-  handholds: string;
-  tips: string[];
-  commonMistakes: string[];
+  videoSegment: {
+    startTime: number;
+    endTime: number;
+  };
+  culturalNote?: string;
 }
 
 // Complete integrated dance catalog
