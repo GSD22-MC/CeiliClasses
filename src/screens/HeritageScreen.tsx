@@ -1,16 +1,9 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import styled from 'styled-components';
+import { View, Text, ScrollView, TouchableOpacity, SafeAreaView } from '../components/ui';
+import { CulturalCard } from '../components/ui/CulturalCard';
 import { CulturalTheme } from '../theme/CulturalTheme';
 import { culturalArticles, irishRegions, getArticlesByCategory, CulturalArticle } from '../data/culturalContent';
-
 
 const culturalFacts = [
   {
@@ -35,10 +28,223 @@ const categoryColors = {
   history: CulturalTheme.colors.primary,
   traditions: CulturalTheme.colors.secondary,
   music: CulturalTheme.colors.tertiary,
-  language: CulturalTheme.colors.success,
+  language: CulturalTheme.colors.tertiary,
   regions: CulturalTheme.colors.primary,
   festivals: CulturalTheme.colors.secondary,
 };
+
+// Styled components for consistent theming
+const Container = styled(View)`
+  flex: 1;
+  background-color: ${({ theme }) => theme.colors.background};
+`;
+
+const Content = styled(ScrollView)`
+  flex: 1;
+  padding: 0 ${({ theme }) => theme.spacing.medium};
+`;
+
+const HeaderSection = styled(View)`
+  padding: ${({ theme }) => theme.spacing.large} 0;
+  align-items: center;
+`;
+
+const ScreenTitle = styled(Text)`
+  font-size: 28px;
+  font-weight: bold;
+  color: ${({ theme }) => theme.colors.primary};
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const ScreenSubtitle = styled(Text)`
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  text-align: center;
+`;
+
+const FeaturedQuote = styled(View)`
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  padding: ${({ theme }) => theme.spacing.large};
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+  align-items: center;
+  box-shadow: ${({ theme }) => theme.elevation.low.boxShadow};
+`;
+
+const QuoteText = styled(Text)`
+  font-size: 18px;
+  font-style: italic;
+  color: ${({ theme }) => theme.colors.primary};
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const QuoteTranslation = styled(Text)`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const QuoteAttribution = styled(Text)`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  font-style: italic;
+`;
+
+const Section = styled(View)`
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+`;
+
+const SectionTitle = styled(Text)`
+  font-size: 20px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onSurface};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const FactCard = styled(View)`
+  background-color: ${({ theme }) => theme.colors.surfaceVariant};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  padding: ${({ theme }) => theme.spacing.medium};
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const FactText = styled(Text)`
+  font-size: 16px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onSurface};
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const FactDetail = styled(Text)`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+`;
+
+const FilterContainer = styled(ScrollView)`
+  margin: ${({ theme }) => theme.spacing.medium} 0;
+  flex-direction: row;
+`;
+
+const FilterButton = styled(TouchableOpacity)<{ active?: boolean }>`
+  padding: ${({ theme }) => theme.spacing.small} ${({ theme }) => theme.spacing.medium};
+  margin-right: ${({ theme }) => theme.spacing.small};
+  background-color: ${({ active, theme }) => 
+    active ? theme.colors.primary : theme.colors.surfaceVariant};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+`;
+
+const FilterButtonText = styled(Text)<{ active?: boolean }>`
+  font-size: 14px;
+  color: ${({ active, theme }) => 
+    active ? theme.colors.onPrimary : theme.colors.onSurfaceVariant};
+  font-weight: 500;
+`;
+
+const ArticleHeader = styled(View)`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const CategoryBadge = styled(View)<{ backgroundColor: string }>`
+  background-color: ${({ backgroundColor }) => backgroundColor};
+  padding: 4px ${({ theme }) => theme.spacing.small};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+`;
+
+const CategoryText = styled(Text)`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.onPrimary};
+  font-weight: 600;
+`;
+
+const ReadTime = styled(Text)`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+`;
+
+const ArticleTitle = styled(Text)`
+  font-size: 18px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onSurface};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const ArticleIrishTitle = styled(Text)`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  font-style: italic;
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const ArticleExcerpt = styled(Text)`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  line-height: 1.4;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const ReadMoreContainer = styled(View)`
+  align-items: flex-end;
+`;
+
+const ReadMoreText = styled(Text)`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight: 600;
+`;
+
+const ResourceCard = styled(TouchableOpacity)`
+  flex-direction: row;
+  align-items: center;
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  padding: ${({ theme }) => theme.spacing.large};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+  box-shadow: ${({ theme }) => theme.elevation.low.boxShadow};
+`;
+
+const ResourceIcon = styled(Text)`
+  font-size: 32px;
+  margin-right: ${({ theme }) => theme.spacing.medium};
+`;
+
+const ResourceContent = styled(View)`
+  flex: 1;
+`;
+
+const ResourceTitle = styled(Text)`
+  font-size: 16px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onSurface};
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const ResourceDescription = styled(Text)`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  line-height: 1.3;
+`;
+
+const Footer = styled(View)`
+  background-color: ${({ theme }) => theme.colors.surfaceVariant};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  padding: ${({ theme }) => theme.spacing.large};
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+  align-items: center;
+`;
+
+const FooterText = styled(Text)`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  text-align: center;
+  line-height: 1.4;
+  font-style: italic;
+`;
 
 export const HeritageScreen: React.FC = () => {
   const [selectedArticle, setSelectedArticle] = useState<CulturalArticle | null>(null);
@@ -49,383 +255,163 @@ export const HeritageScreen: React.FC = () => {
   const filteredArticles = selectedCategory === 'all' 
     ? culturalArticles 
     : getArticlesByCategory(selectedCategory as CulturalArticle['category']);
+
   const renderCategoryFilter = () => (
-    <ScrollView 
+    <FilterContainer 
       horizontal 
       showsHorizontalScrollIndicator={false}
-      style={styles.filterContainer}
     >
       {categories.map((category) => (
-        <TouchableOpacity
+        <FilterButton
           key={category}
-          style={[
-            styles.filterButton,
-            selectedCategory === category && styles.filterButtonActive
-          ]}
+          active={selectedCategory === category}
           onPress={() => setSelectedCategory(category)}
           accessibilityLabel={`Filter by ${category}`}
           accessibilityRole="button"
         >
-          <Text style={[
-            styles.filterButtonText,
-            selectedCategory === category && styles.filterButtonTextActive
-          ]}>
+          <FilterButtonText active={selectedCategory === category}>
             {category.charAt(0).toUpperCase() + category.slice(1)}
-          </Text>
-        </TouchableOpacity>
+          </FilterButtonText>
+        </FilterButton>
       ))}
-    </ScrollView>
+    </FilterContainer>
   );
 
   const renderArticleCard = (article: CulturalArticle) => (
-    <TouchableOpacity
+    <CulturalCard
       key={article.id}
-      style={styles.articleCard}
+      culturalLevel="primary"
       onPress={() => setSelectedArticle(article)}
-      accessibilityLabel={`Read article: ${article.title.english}`}
-      accessibilityRole="button"
     >
-      <View style={styles.articleHeader}>
-        <View style={[
-          styles.categoryBadge,
-          { backgroundColor: categoryColors[article.category] }
-        ]}>
-          <Text style={styles.categoryText}>{article.category}</Text>
-        </View>
-        <Text style={styles.readTime}>{article.readingTime} min read</Text>
-      </View>
+      <ArticleHeader>
+        <CategoryBadge backgroundColor={categoryColors[article.category]}>
+          <CategoryText>{article.category}</CategoryText>
+        </CategoryBadge>
+        <ReadTime>{article.readingTime} min read</ReadTime>
+      </ArticleHeader>
       
-      <Text style={styles.articleTitle}>{article.title.english}</Text>
-      <Text style={styles.articleIrishTitle}>{article.title.irish}</Text>
-      <Text style={styles.articleExcerpt}>{article.summary}</Text>
+      <ArticleTitle>{article.title.english}</ArticleTitle>
+      <ArticleIrishTitle>{article.title.irish}</ArticleIrishTitle>
+      <ArticleExcerpt>{article.summary}</ArticleExcerpt>
       
-      <View style={styles.readMoreContainer}>
-        <Text style={styles.readMoreText}>Read More →</Text>
-      </View>
-    </TouchableOpacity>
+      <ReadMoreContainer>
+        <ReadMoreText>Read More →</ReadMoreText>
+      </ReadMoreContainer>
+    </CulturalCard>
   );
 
   const renderFactCard = (fact: typeof culturalFacts[0], index: number) => (
-    <View key={index} style={styles.factCard}>
-      <Text style={styles.factText}>{fact.fact}</Text>
-      <Text style={styles.factDetail}>{fact.detail}</Text>
-    </View>
+    <FactCard key={index}>
+      <FactText>{fact.fact}</FactText>
+      <FactDetail>{fact.detail}</FactDetail>
+    </FactCard>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.content}>
-        <View style={styles.headerSection}>
-          <Text style={styles.screenTitle}>Oidhreacht (Heritage)</Text>
-          <Text style={styles.screenSubtitle}>
-            Explore the rich history and culture behind Irish céilí dancing
-          </Text>
-        </View>
+    <Container>
+      <SafeAreaView>
+        <Content>
+          <HeaderSection>
+            <ScreenTitle>Oidhreacht (Heritage)</ScreenTitle>
+            <ScreenSubtitle>
+              Explore the rich history and culture behind Irish céilí dancing
+            </ScreenSubtitle>
+          </HeaderSection>
 
-        {/* Featured Quote */}
-        <View style={styles.featuredQuote}>
-          <Text style={styles.quoteText}>
-            "Tír gan teanga, tír gan anam"
-          </Text>
-          <Text style={styles.quoteTranslation}>
-            A country without a language is a country without a soul
-          </Text>
-          <Text style={styles.quoteAttribution}>— Irish Proverb</Text>
-        </View>
+          {/* Featured Quote */}
+          <FeaturedQuote>
+            <QuoteText>
+              "Tír gan teanga, tír gan anam"
+            </QuoteText>
+            <QuoteTranslation>
+              A country without a language is a country without a soul
+            </QuoteTranslation>
+            <QuoteAttribution>— Irish Proverb</QuoteAttribution>
+          </FeaturedQuote>
 
-        {/* Cultural Facts */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Did You Know?</Text>
-          {culturalFacts.map(renderFactCard)}
-        </View>
+          {/* Cultural Facts */}
+          <Section>
+            <SectionTitle>Did You Know?</SectionTitle>
+            {culturalFacts.map(renderFactCard)}
+          </Section>
 
-        {/* Category Filter */}
-        {renderCategoryFilter()}
+          {/* Category Filter */}
+          {renderCategoryFilter()}
 
-        {/* Heritage Articles */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Heritage Articles</Text>
-          {filteredArticles.map(renderArticleCard)}
-        </View>
+          {/* Heritage Articles */}
+          <Section>
+            <SectionTitle>Heritage Articles</SectionTitle>
+            {filteredArticles.map(renderArticleCard)}
+          </Section>
 
-        {/* Irish Regions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Irish Regions</Text>
-          {irishRegions.map((region) => (
-            <TouchableOpacity key={region.id} style={styles.regionCard}>
-              <Text style={styles.regionName}>{region.name.english}</Text>
-              <Text style={styles.regionIrishName}>{region.name.irish}</Text>
-              <Text style={styles.regionDescription}>{region.description}</Text>
-              <Text style={styles.regionDances}>Traditional Dances: {region.traditionalDances.length} dances</Text>
-            </TouchableOpacity>
-          ))}
+          {/* Irish Regions */}
+          <Section>
+            <SectionTitle>Irish Regions</SectionTitle>
+            {irishRegions.map((region) => (
+              <CulturalCard
+                key={region.id}
+                culturalLevel="secondary"
+                title={region.name.english}
+                irishTitle={region.name.irish}
+              >
+                <Text style={{ marginBottom: CulturalTheme.spacing.small }}>
+                  {region.description}
+                </Text>
+                <Text style={{ 
+                  fontSize: '12px', 
+                  color: CulturalTheme.colors.primary, 
+                  fontWeight: '500' 
+                }}>
+                  Traditional Dances: {region.traditionalDances.length} dances
+                </Text>
+              </CulturalCard>
+            ))}
+          </Section>
 
-        {/* Cultural Resources */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Learn More</Text>
-          
-          <TouchableOpacity style={styles.resourceCard}>
-            <Text style={styles.resourceIcon}>🏛️</Text>
-            <View style={styles.resourceContent}>
-              <Text style={styles.resourceTitle}>Irish Cultural Center</Text>
-              <Text style={styles.resourceDescription}>
-                Find local Irish cultural centers and events near you
-              </Text>
-            </View>
-          </TouchableOpacity>
+          {/* Cultural Resources */}
+          <Section>
+            <SectionTitle>Learn More</SectionTitle>
+            
+            <ResourceCard>
+              <ResourceIcon>🏛️</ResourceIcon>
+              <ResourceContent>
+                <ResourceTitle>Irish Cultural Center</ResourceTitle>
+                <ResourceDescription>
+                  Find local Irish cultural centers and events near you
+                </ResourceDescription>
+              </ResourceContent>
+            </ResourceCard>
 
-          <TouchableOpacity style={styles.resourceCard}>
-            <Text style={styles.resourceIcon}>📚</Text>
-            <View style={styles.resourceContent}>
-              <Text style={styles.resourceTitle}>Irish Language Resources</Text>
-              <Text style={styles.resourceDescription}>
-                Learn basic Irish (Gaeilge) to deepen your cultural connection
-              </Text>
-            </View>
-          </TouchableOpacity>
+            <ResourceCard>
+              <ResourceIcon>📚</ResourceIcon>
+              <ResourceContent>
+                <ResourceTitle>Irish Language Resources</ResourceTitle>
+                <ResourceDescription>
+                  Learn basic Irish (Gaeilge) to deepen your cultural connection
+                </ResourceDescription>
+              </ResourceContent>
+            </ResourceCard>
 
-          <TouchableOpacity style={styles.resourceCard}>
-            <Text style={styles.resourceIcon}>🎵</Text>
-            <View style={styles.resourceContent}>
-              <Text style={styles.resourceTitle}>Traditional Music</Text>
-              <Text style={styles.resourceDescription}>
-                Discover traditional Irish musicians and their recordings
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+            <ResourceCard>
+              <ResourceIcon>🎵</ResourceIcon>
+              <ResourceContent>
+                <ResourceTitle>Traditional Music</ResourceTitle>
+                <ResourceDescription>
+                  Discover traditional Irish musicians and their recordings
+                </ResourceDescription>
+              </ResourceContent>
+            </ResourceCard>
+          </Section>
 
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            Irish culture is living history. By learning traditional dances,
-            you become part of a story that spans generations.
-          </Text>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+          {/* Footer */}
+          <Footer>
+            <FooterText>
+              Irish culture is living history. By learning traditional dances,
+              you become part of a story that spans generations.
+            </FooterText>
+          </Footer>
+        </Content>
+      </SafeAreaView>
+    </Container>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: CulturalTheme.colors.background,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: CulturalTheme.spacing.medium,
-  },
-  headerSection: {
-    paddingVertical: CulturalTheme.spacing.large,
-    alignItems: 'center',
-  },
-  screenTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: CulturalTheme.colors.primary,
-    textAlign: 'center',
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  screenSubtitle: {
-    fontSize: 16,
-    color: CulturalTheme.colors.textSecondary,
-    textAlign: 'center',
-  },
-  featuredQuote: {
-    backgroundColor: CulturalTheme.colors.surface,
-    borderRadius: CulturalTheme.borderRadius.medium,
-    padding: CulturalTheme.spacing.large,
-    marginBottom: CulturalTheme.spacing.large,
-    alignItems: 'center',
-    ...CulturalTheme.elevation.small,
-  },
-  quoteText: {
-    fontSize: 18,
-    fontStyle: 'italic',
-    color: CulturalTheme.colors.primary,
-    textAlign: 'center',
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  quoteTranslation: {
-    fontSize: 14,
-    color: CulturalTheme.colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  quoteAttribution: {
-    fontSize: 12,
-    color: CulturalTheme.colors.textSecondary,
-    fontStyle: 'italic',
-  },
-  section: {
-    marginBottom: CulturalTheme.spacing.large,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: CulturalTheme.colors.textPrimary,
-    marginBottom: CulturalTheme.spacing.medium,
-  },
-  factCard: {
-    backgroundColor: CulturalTheme.colors.backgroundSecondary,
-    borderRadius: CulturalTheme.borderRadius.small,
-    padding: CulturalTheme.spacing.medium,
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  factText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: CulturalTheme.colors.textPrimary,
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  factDetail: {
-    fontSize: 14,
-    color: CulturalTheme.colors.textSecondary,
-  },
-  articleCard: {
-    backgroundColor: CulturalTheme.colors.surface,
-    borderRadius: CulturalTheme.borderRadius.medium,
-    padding: CulturalTheme.spacing.large,
-    marginBottom: CulturalTheme.spacing.medium,
-    ...CulturalTheme.elevation.small,
-  },
-  articleHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: CulturalTheme.spacing.medium,
-  },
-  categoryBadge: {
-    paddingHorizontal: CulturalTheme.spacing.small,
-    paddingVertical: 4,
-    borderRadius: CulturalTheme.borderRadius.small,
-  },
-  categoryText: {
-    fontSize: 12,
-    color: CulturalTheme.colors.surface,
-    fontWeight: '600',
-  },
-  readTime: {
-    fontSize: 12,
-    color: CulturalTheme.colors.textSecondary,
-  },
-  articleTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: CulturalTheme.colors.textPrimary,
-    marginBottom: CulturalTheme.spacing.medium,
-  },
-  articleExcerpt: {
-    fontSize: 14,
-    color: CulturalTheme.colors.textSecondary,
-    lineHeight: 20,
-    marginBottom: CulturalTheme.spacing.medium,
-  },
-  readMoreContainer: {
-    alignItems: 'flex-end',
-  },
-  readMoreText: {
-    fontSize: 14,
-    color: CulturalTheme.colors.primary,
-    fontWeight: '600',
-  },
-  filterContainer: {
-    marginVertical: CulturalTheme.spacing.medium,
-  },
-  filterButton: {
-    paddingHorizontal: CulturalTheme.spacing.medium,
-    paddingVertical: CulturalTheme.spacing.small,
-    marginRight: CulturalTheme.spacing.small,
-    backgroundColor: CulturalTheme.colors.surfaceVariant,
-    borderRadius: CulturalTheme.borderRadius.small,
-  },
-  filterButtonActive: {
-    backgroundColor: CulturalTheme.colors.primary,
-  },
-  filterButtonText: {
-    fontSize: 14,
-    color: CulturalTheme.colors.onSurfaceVariant,
-    fontWeight: '500',
-  },
-  filterButtonTextActive: {
-    color: CulturalTheme.colors.onPrimary,
-  },
-  articleIrishTitle: {
-    fontSize: 14,
-    color: CulturalTheme.colors.onSurfaceVariant,
-    fontStyle: 'italic',
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  regionCard: {
-    backgroundColor: CulturalTheme.colors.surface,
-    borderRadius: CulturalTheme.borderRadius.medium,
-    padding: CulturalTheme.spacing.large,
-    marginBottom: CulturalTheme.spacing.medium,
-    ...CulturalTheme.elevation.low,
-  },
-  regionName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: CulturalTheme.colors.onSurface,
-    marginBottom: CulturalTheme.spacing.xs,
-  },
-  regionIrishName: {
-    fontSize: 14,
-    color: CulturalTheme.colors.onSurfaceVariant,
-    fontStyle: 'italic',
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  regionDescription: {
-    fontSize: 14,
-    color: CulturalTheme.colors.onSurfaceVariant,
-    lineHeight: 20,
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  regionDances: {
-    fontSize: 12,
-    color: CulturalTheme.colors.primary,
-    fontWeight: '500',
-  },
-  resourceCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: CulturalTheme.colors.surface,
-    borderRadius: CulturalTheme.borderRadius.medium,
-    padding: CulturalTheme.spacing.large,
-    marginBottom: CulturalTheme.spacing.medium,
-    ...CulturalTheme.elevation.small,
-  },
-  resourceIcon: {
-    fontSize: 32,
-    marginRight: CulturalTheme.spacing.medium,
-  },
-  resourceContent: {
-    flex: 1,
-  },
-  resourceTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: CulturalTheme.colors.textPrimary,
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  resourceDescription: {
-    fontSize: 14,
-    color: CulturalTheme.colors.textSecondary,
-    lineHeight: 18,
-  },
-  footer: {
-    backgroundColor: CulturalTheme.colors.backgroundSecondary,
-    borderRadius: CulturalTheme.borderRadius.medium,
-    padding: CulturalTheme.spacing.large,
-    marginBottom: CulturalTheme.spacing.large,
-    alignItems: 'center',
-  },
-  footerText: {
-    fontSize: 14,
-    color: CulturalTheme.colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 20,
-    fontStyle: 'italic',
-  },
-});

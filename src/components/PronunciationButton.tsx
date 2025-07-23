@@ -1,18 +1,119 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Surface } from 'react-native-paper';
-import Sound from 'react-native-sound';
-
-import { CulturalTheme, CulturalSpacing, CulturalBorderRadius } from '../theme/CulturalTheme';
+import React, { useState, useRef } from 'react';
+import styled from 'styled-components';
+import { CulturalTheme } from '../theme/CulturalTheme';
 
 interface PronunciationButtonProps {
   text: string;
   audioUrl: string;
   size?: 'small' | 'medium' | 'large';
-  style?: any;
+  style?: React.CSSProperties;
   onPlayComplete?: () => void;
 }
+
+const Container = styled.button<{ size: 'small' | 'medium' | 'large'; isPlaying: boolean; isLoading: boolean }>`
+  display: flex;
+  align-items: center;
+  background-color: ${({ theme }) => theme.colors.surface};
+  border: 1px solid ${({ theme }) => theme.colors.outline};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  cursor: ${({ isPlaying, isLoading }) => (isPlaying || isLoading ? 'default' : 'pointer')};
+  opacity: ${({ isPlaying, isLoading }) => (isPlaying || isLoading ? 0.7 : 1)};
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  
+  padding: ${({ size, theme }) => {
+    switch (size) {
+      case 'small': return `${theme.spacing.xs} ${theme.spacing.small}`;
+      case 'large': return `${theme.spacing.medium} ${theme.spacing.large}`;
+      default: return `${theme.spacing.small} ${theme.spacing.medium}`;
+    }
+  }};
+
+  &:hover:not(:disabled) {
+    background-color: ${({ theme }) => theme.colors.surfaceVariant};
+    transform: translateY(-1px);
+    box-shadow: ${({ theme }) => theme.elevation.low.boxShadow};
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+`;
+
+const Content = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.small};
+  flex: 1;
+`;
+
+const Icon = styled.span<{ size: 'small' | 'medium' | 'large' }>`
+  font-size: ${({ size }) => {
+    switch (size) {
+      case 'small': return '16px';
+      case 'large': return '28px';
+      default: return '20px';
+    }
+  }};
+  color: ${({ theme }) => theme.colors.primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Text = styled.span<{ size: 'small' | 'medium' | 'large' }>`
+  color: ${({ theme }) => theme.colors.onSurface};
+  font-weight: 500;
+  flex: 1;
+  text-align: left;
+  
+  font-size: ${({ size }) => {
+    switch (size) {
+      case 'small': return '12px';
+      case 'large': return '16px';
+      default: return '14px';
+    }
+  }};
+`;
+
+const HearingIcon = styled.span<{ size: 'small' | 'medium' | 'large' }>`
+  font-size: ${({ size }) => {
+    switch (size) {
+      case 'small': return '12px';
+      case 'large': return '24px';
+      default: return '16px';
+    }
+  }};
+  color: ${({ theme }) => theme.colors.secondary};
+  opacity: 0.6;
+`;
+
+const PlayingIndicator = styled.div<{ show: boolean }>`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: ${({ theme }) => theme.colors.primary};
+  transform: ${({ show }) => show ? 'scaleX(1)' : 'scaleX(0)'};
+  transform-origin: left;
+  transition: transform 0.3s ease;
+`;
+
+const Spinner = styled.div`
+  width: 16px;
+  height: 16px;
+  border: 2px solid ${({ theme }) => theme.colors.outline};
+  border-top: 2px solid ${({ theme }) => theme.colors.primary};
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
 
 export const PronunciationButton: React.FC<PronunciationButtonProps> = ({
   text,
@@ -23,6 +124,7 @@ export const PronunciationButton: React.FC<PronunciationButtonProps> = ({
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const playPronunciation = async () => {
     if (isPlaying || isLoading) return;
@@ -30,165 +132,91 @@ export const PronunciationButton: React.FC<PronunciationButtonProps> = ({
     setIsLoading(true);
 
     try {
-      // Initialize sound
-      const sound = new Sound(audioUrl, Sound.MAIN_BUNDLE, (error) => {
-        setIsLoading(false);
+      // Create audio element if it doesn't exist
+      if (!audioRef.current) {
+        audioRef.current = new Audio(audioUrl);
         
-        if (error) {
-          console.error('Failed to load sound:', error);
-          return;
-        }
-
-        setIsPlaying(true);
-        
-        // Play the sound
-        sound.play((success) => {
-          setIsPlaying(false);
-          
-          if (success) {
-            console.log('Pronunciation played successfully');
-            onPlayComplete?.();
-          } else {
-            console.error('Playback failed');
-          }
-          
-          // Release the audio player resource
-          sound.release();
+        audioRef.current.addEventListener('loadeddata', () => {
+          setIsLoading(false);
         });
-      });
+
+        audioRef.current.addEventListener('ended', () => {
+          setIsPlaying(false);
+          onPlayComplete?.();
+        });
+
+        audioRef.current.addEventListener('error', (error) => {
+          setIsLoading(false);
+          setIsPlaying(false);
+          console.error('Error loading audio:', error);
+        });
+      }
+
+      // Load and play audio
+      await audioRef.current.load();
+      setIsLoading(false);
+      setIsPlaying(true);
+      
+      await audioRef.current.play();
+      
     } catch (error) {
       setIsLoading(false);
+      setIsPlaying(false);
       console.error('Error playing pronunciation:', error);
+      
+      // Fallback: try to use Web Speech API for synthesis
+      try {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ga-IE'; // Irish language
+        utterance.rate = 0.8; // Slower for learning
+        
+        utterance.onstart = () => setIsPlaying(true);
+        utterance.onend = () => {
+          setIsPlaying(false);
+          onPlayComplete?.();
+        };
+        
+        speechSynthesis.speak(utterance);
+      } catch (speechError) {
+        console.error('Speech synthesis also failed:', speechError);
+      }
     }
   };
 
-  const getSizeStyles = () => {
-    switch (size) {
-      case 'small':
-        return {
-          container: styles.smallContainer,
-          text: styles.smallText,
-          icon: 16,
-        };
-      case 'large':
-        return {
-          container: styles.largeContainer,
-          text: styles.largeText,
-          icon: 28,
-        };
-      default:
-        return {
-          container: styles.mediumContainer,
-          text: styles.mediumText,
-          icon: 20,
-        };
-    }
-  };
-
-  const sizeStyles = getSizeStyles();
+  // Cleanup audio when component unmounts
+  React.useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
 
   return (
-    <TouchableOpacity
-      style={[styles.touchable, style]}
-      onPress={playPronunciation}
+    <Container
+      size={size}
+      isPlaying={isPlaying}
+      isLoading={isLoading}
+      onClick={playPronunciation}
       disabled={isPlaying || isLoading}
-      activeOpacity={0.7}
+      style={style}
     >
-      <Surface style={[styles.container, sizeStyles.container]} elevation={2}>
-        <View style={styles.content}>
-          {isLoading ? (
-            <ActivityIndicator 
-              size="small" 
-              color={CulturalTheme.colors.primary} 
-              style={styles.loader}
-            />
-          ) : (
-            <Icon
-              name={isPlaying ? 'volume-up' : 'play-arrow'}
-              size={sizeStyles.icon}
-              color={CulturalTheme.colors.primary}
-              style={styles.icon}
-            />
-          )}
-          
-          <Text style={[styles.text, sizeStyles.text]} numberOfLines={2}>
-            {text}
-          </Text>
-          
-          <Icon
-            name="hearing"
-            size={sizeStyles.icon - 4}
-            color={CulturalTheme.colors.secondary}
-            style={styles.hearingIcon}
-          />
-        </View>
-        
-        {isPlaying && (
-          <View style={styles.playingIndicator} />
+      <Content>
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          <Icon size={size}>
+            {isPlaying ? '🔊' : '▶️'}
+          </Icon>
         )}
-      </Surface>
-    </TouchableOpacity>
+        
+        <Text size={size}>{text}</Text>
+        
+        <HearingIcon size={size}>👂</HearingIcon>
+      </Content>
+      
+      <PlayingIndicator show={isPlaying} />
+    </Container>
   );
 };
-
-const styles = StyleSheet.create({
-  touchable: {
-    alignSelf: 'flex-start',
-  },
-  container: {
-    backgroundColor: CulturalTheme.colors.surface,
-    borderRadius: CulturalBorderRadius.md,
-    borderWidth: 1,
-    borderColor: CulturalTheme.colors.outline,
-    overflow: 'hidden',
-  },
-  smallContainer: {
-    paddingHorizontal: CulturalSpacing.sm,
-    paddingVertical: CulturalSpacing.xs,
-  },
-  mediumContainer: {
-    paddingHorizontal: CulturalSpacing.md,
-    paddingVertical: CulturalSpacing.sm,
-  },
-  largeContainer: {
-    paddingHorizontal: CulturalSpacing.lg,
-    paddingVertical: CulturalSpacing.md,
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: CulturalSpacing.sm,
-  },
-  icon: {
-    marginRight: CulturalSpacing.xs,
-  },
-  loader: {
-    marginRight: CulturalSpacing.xs,
-  },
-  text: {
-    flex: 1,
-    color: CulturalTheme.colors.onSurface,
-    fontFamily: 'System',
-    fontWeight: '500',
-  },
-  smallText: {
-    fontSize: 12,
-  },
-  mediumText: {
-    fontSize: 14,
-  },
-  largeText: {
-    fontSize: 16,
-  },
-  hearingIcon: {
-    opacity: 0.6,
-  },
-  playingIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 3,
-    backgroundColor: CulturalTheme.colors.primary,
-  },
-});

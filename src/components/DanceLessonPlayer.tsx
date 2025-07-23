@@ -1,22 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  Alert,
-  PanGestureHandler,
-  State,
-} from 'react-native';
-import { Surface, Button, IconButton, ProgressBar } from 'react-native-paper';
-import Video from 'react-native-video';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import Slider from '@react-native-community/slider';
-import { PanGestureHandler, State as GestureState } from 'react-native-gesture-handler';
-
-import { CulturalTheme, CulturalSpacing, CulturalBorderRadius } from '../theme/CulturalTheme';
+import styled from 'styled-components';
+import YouTube from 'react-youtube';
+import { CulturalTheme } from '../theme/CulturalTheme';
 import { PronunciationButton } from './PronunciationButton';
+import { DanceFormation3D } from './DanceFormation3D';
 
 interface DanceStep {
   stepNumber: number;
@@ -35,10 +22,11 @@ interface DanceLessonPlayerProps {
   danceName: string;
   irishName: string;
   videoStreams: {
-    frontView: string;
-    sideView: string;
-    overhead: string;
+    frontView: string; // YouTube video ID
+    sideView: string;  // YouTube video ID
+    overhead: string;  // YouTube video ID
   };
+  musicVideo?: string; // YouTube video ID for background music
   steps: DanceStep[];
   culturalContext: {
     historicalOrigin: string;
@@ -49,69 +37,287 @@ interface DanceLessonPlayerProps {
   onLessonComplete?: () => void;
 }
 
-const { width } = Dimensions.get('window');
-const videoHeight = (width * 9) / 16; // 16:9 aspect ratio
+type ViewType = 'frontView' | 'sideView' | 'overhead' | '3d';
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: ${({ theme }) => theme.colors.background};
+  min-height: 100vh;
+`;
+
+const CulturalBanner = styled.div<{ show: boolean }>`
+  display: ${({ show }) => (show ? 'block' : 'none')};
+  background-color: ${({ theme }) => theme.colors.primaryContainer};
+  padding: ${({ theme }) => theme.spacing.medium};
+  margin: ${({ theme }) => theme.spacing.medium};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  box-shadow: ${({ theme }) => theme.elevation.low.boxShadow};
+`;
+
+const CulturalTitle = styled.h3`
+  font-size: 1rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onPrimaryContainer};
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const CulturalText = styled.p`
+  font-size: 0.875rem;
+  color: ${({ theme }) => theme.colors.onPrimaryContainer};
+  line-height: 1.4;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const CloseButton = styled.button`
+  background: none;
+  border: none;
+  color: ${({ theme }) => theme.colors.onPrimaryContainer};
+  cursor: pointer;
+  font-size: 0.875rem;
+  text-decoration: underline;
+`;
+
+const VideoContainer = styled.div`
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #000;
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  overflow: hidden;
+  position: relative;
+`;
+
+const ViewSelector = styled.div`
+  display: flex;
+  background-color: ${({ theme }) => theme.colors.surface};
+  padding: ${({ theme }) => theme.spacing.small} 0;
+  gap: ${({ theme }) => theme.spacing.small};
+  justify-content: center;
+`;
+
+const ViewButton = styled.button<{ active: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: ${({ theme }) => theme.spacing.small};
+  border: none;
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  background-color: ${({ active, theme }) =>
+    active ? theme.colors.primary : 'transparent'};
+  color: ${({ active, theme }) =>
+    active ? theme.colors.onPrimary : theme.colors.onSurface};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+
+  &:hover {
+    background-color: ${({ active, theme }) =>
+      active ? theme.colors.primary : theme.colors.surfaceVariant};
+  }
+`;
+
+const ViewIcon = styled.div`
+  font-size: 1.5rem;
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const ViewLabel = styled.span`
+  font-size: 0.75rem;
+  font-weight: 500;
+`;
+
+const StepInfo = styled.div`
+  background-color: ${({ theme }) => theme.colors.surface};
+  margin: ${({ theme }) => theme.spacing.medium};
+  padding: ${({ theme }) => theme.spacing.large};
+  border-radius: ${({ theme }) => theme.borderRadius.large};
+  box-shadow: ${({ theme }) => theme.elevation.medium.boxShadow};
+`;
+
+const StepHeader = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+  gap: ${({ theme }) => theme.spacing.small};
+`;
+
+const StepNumber = styled.span`
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+const StepTitle = styled.h4`
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onSurface};
+  flex: 1;
+  margin: 0;
+`;
+
+const StepDescription = styled.p`
+  font-size: 0.875rem;
+  color: ${({ theme }) => theme.colors.onSurface};
+  line-height: 1.4;
+  margin: ${({ theme }) => theme.spacing.medium} 0;
+`;
+
+const CulturalNote = styled.div`
+  display: flex;
+  background-color: ${({ theme }) => theme.colors.primaryContainer};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  padding: ${({ theme }) => theme.spacing.small};
+  margin: ${({ theme }) => theme.spacing.medium} 0;
+  gap: ${({ theme }) => theme.spacing.small};
+`;
+
+const CulturalNoteText = styled.p`
+  font-size: 0.75rem;
+  color: ${({ theme }) => theme.colors.onPrimaryContainer};
+  line-height: 1.3;
+  margin: 0;
+  flex: 1;
+`;
+
+const CompleteStepButton = styled.button<{ completed: boolean }>`
+  background-color: ${({ completed, theme }) =>
+    completed ? theme.colors.tertiary : theme.colors.primary};
+  color: ${({ theme }) => theme.colors.onPrimary};
+  border: none;
+  padding: ${({ theme }) => theme.spacing.medium};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  font-weight: 600;
+  cursor: ${({ completed }) => (completed ? 'default' : 'pointer')};
+  opacity: ${({ completed }) => (completed ? 0.7 : 1)};
+  transition: all 0.2s ease;
+  width: 100%;
+
+  &:hover {
+    opacity: ${({ completed }) => (completed ? 0.7 : 0.9)};
+  }
+`;
+
+const StepNavigation = styled.div`
+  background-color: ${({ theme }) => theme.colors.surface};
+  padding: ${({ theme }) => theme.spacing.medium};
+`;
+
+const NavigationTitle = styled.h4`
+  font-size: 1rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onSurface};
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const StepButtons = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing.small};
+  justify-content: center;
+`;
+
+const StepNavigationButton = styled.button<{
+  current: boolean;
+  completed: boolean;
+}>`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background-color: ${({ current, completed, theme }) =>
+    current
+      ? theme.colors.primary
+      : completed
+      ? theme.colors.tertiary
+      : theme.colors.outline};
+  color: ${({ current, completed, theme }) =>
+    current || completed ? theme.colors.onPrimary : theme.colors.onSurface};
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+`;
+
+const MusicPlayer = styled.div`
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  box-shadow: ${({ theme }) => theme.elevation.high.boxShadow};
+  z-index: 1000;
+`;
+
+const MusicHeader = styled.div`
+  padding: ${({ theme }) => theme.spacing.small};
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.onPrimary};
+  border-radius: ${({ theme }) => theme.borderRadius.medium} 
+    ${({ theme }) => theme.borderRadius.medium} 0 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+`;
 
 export const DanceLessonPlayer: React.FC<DanceLessonPlayerProps> = ({
   danceName,
   irishName,
   videoStreams,
+  musicVideo,
   steps,
   culturalContext,
   onStepComplete,
   onLessonComplete,
 }) => {
-  const [currentView, setCurrentView] = useState<'frontView' | 'sideView' | 'overhead'>('frontView');
+  const [currentView, setCurrentView] = useState<ViewType>('frontView');
   const [currentStep, setCurrentStep] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [showControls, setShowControls] = useState(true);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [showCulturalContext, setShowCulturalContext] = useState(false);
-  const [gestureStartTime, setGestureStartTime] = useState(0);
+  const [showMusicPlayer, setShowMusicPlayer] = useState(false);
 
-  const videoRef = useRef<Video>(null);
-  const controlsTimeoutRef = useRef<NodeJS.Timeout>();
+  const videoRef = useRef<any>(null);
+  const musicRef = useRef<any>(null);
 
   const currentStepData = steps[currentStep];
-  const isStepMode = currentStepData && currentTime >= currentStepData.videoSegment.startTime && currentTime <= currentStepData.videoSegment.endTime;
 
-  useEffect(() => {
-    // Auto-hide controls after 3 seconds
-    if (showControls) {
-      controlsTimeoutRef.current = setTimeout(() => {
-        setShowControls(false);
-      }, 3000);
-    }
-
-    return () => {
-      if (controlsTimeoutRef.current) {
-        clearTimeout(controlsTimeoutRef.current);
-      }
-    };
-  }, [showControls]);
-
-  const togglePlayPause = () => {
-    setIsPlaying(!isPlaying);
-    setShowControls(true);
+  const videoOptions = {
+    height: '450',
+    width: '800',
+    playerVars: {
+      autoplay: 0,
+      controls: 1,
+      rel: 0,
+      showinfo: 0,
+      start: currentStepData?.videoSegment.startTime || 0,
+      end: currentStepData?.videoSegment.endTime || undefined,
+    },
   };
 
-  const changePlaybackSpeed = () => {
-    const speeds = [0.5, 0.75, 1.0, 1.25];
-    const currentIndex = speeds.indexOf(playbackSpeed);
-    const nextSpeed = speeds[(currentIndex + 1) % speeds.length];
-    setPlaybackSpeed(nextSpeed);
-    setShowControls(true);
+  const musicOptions = {
+    height: '200',
+    width: '300',
+    playerVars: {
+      autoplay: 0,
+      controls: 1,
+      rel: 0,
+      showinfo: 0,
+      loop: 1,
+    },
   };
 
   const goToStep = (stepIndex: number) => {
     if (stepIndex >= 0 && stepIndex < steps.length) {
-      const step = steps[stepIndex];
       setCurrentStep(stepIndex);
-      videoRef.current?.seek(step.videoSegment.startTime);
-      setShowControls(true);
+      const step = steps[stepIndex];
+      if (videoRef.current) {
+        videoRef.current.getInternalPlayer().seekTo(step.videoSegment.startTime);
+      }
     }
   };
 
@@ -121,499 +327,167 @@ export const DanceLessonPlayer: React.FC<DanceLessonPlayerProps> = ({
       setCompletedSteps(newCompletedSteps);
       onStepComplete?.(currentStep);
 
-      // Check if all steps are completed
       if (newCompletedSteps.length === steps.length) {
-        Alert.alert(
-          'Lesson Complete!',
-          `Maith thú! (Well done!) You've completed learning ${danceName}. You now know a traditional Irish ceili dance!`,
-          [
-            {
-              text: 'Continue',
-              onPress: () => onLessonComplete?.(),
-            },
-          ]
+        alert(
+          `Maith thú! (Well done!) You've completed learning ${danceName}. You now know a traditional Irish ceili dance!`
         );
-      } else {
-        // Move to next step
-        if (currentStep < steps.length - 1) {
-          setTimeout(() => goToStep(currentStep + 1), 1000);
-        }
+        onLessonComplete?.();
+      } else if (currentStep < steps.length - 1) {
+        setTimeout(() => goToStep(currentStep + 1), 1000);
       }
     }
   };
 
-  const onVideoProgress = (data: any) => {
-    setCurrentTime(data.currentTime);
-    
-    // Check if current step segment is completed
-    if (currentStepData && data.currentTime >= currentStepData.videoSegment.endTime) {
-      setIsPlaying(false);
-    }
+  const getCurrentVideoId = () => {
+    if (currentView === '3d') return videoStreams.frontView; // Use front view for 3D
+    return videoStreams[currentView];
   };
 
-  const onVideoLoad = (data: any) => {
-    setDuration(data.duration);
-  };
-
-  const onSwipeGesture = (event: any) => {
-    const { translationX, state } = event.nativeEvent;
-    
-    if (state === GestureState.BEGAN) {
-      setGestureStartTime(currentTime);
-    } else if (state === GestureState.END) {
-      const swipeThreshold = 50;
-      
-      if (Math.abs(translationX) > swipeThreshold) {
-        if (translationX > 0) {
-          // Swipe right - next step
-          if (currentStep < steps.length - 1) {
-            goToStep(currentStep + 1);
-          }
-        } else {
-          // Swipe left - previous step
-          if (currentStep > 0) {
-            goToStep(currentStep - 1);
-          }
-        }
-      }
-    }
-  };
-
-  const formatTime = (timeInSeconds: number) => {
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = Math.floor(timeInSeconds % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const getViewIcon = (view: string) => {
+  const getViewIcon = (view: ViewType) => {
     switch (view) {
-      case 'frontView': return 'person';
-      case 'sideView': return 'rotate-90-degrees-ccw';
-      case 'overhead': return 'keyboard-arrow-up';
-      default: return 'person';
+      case 'frontView': return '👤';
+      case 'sideView': return '↻';
+      case 'overhead': return '⬆️';
+      case '3d': return '🎭';
+      default: return '👤';
+    }
+  };
+
+  const getViewLabel = (view: ViewType) => {
+    switch (view) {
+      case 'frontView': return 'Front';
+      case 'sideView': return 'Side';
+      case 'overhead': return 'Top';
+      case '3d': return '3D';
+      default: return 'Front';
     }
   };
 
   return (
-    <View style={styles.container}>
-      {/* Cultural Context Banner */}
-      {showCulturalContext && (
-        <Surface style={styles.culturalBanner} elevation={2}>
-          <Text style={styles.culturalTitle}>Cultural Significance</Text>
-          <Text style={styles.culturalText}>{culturalContext.significance}</Text>
-          <Button
-            mode="text"
-            onPress={() => setShowCulturalContext(false)}
-            compact
-          >
-            Close
-          </Button>
-        </Surface>
-      )}
+    <Container>
+      <CulturalBanner show={showCulturalContext}>
+        <CulturalTitle>Cultural Significance</CulturalTitle>
+        <CulturalText>{culturalContext.significance}</CulturalText>
+        <CloseButton onClick={() => setShowCulturalContext(false)}>
+          Close
+        </CloseButton>
+      </CulturalBanner>
 
-      {/* Video Player */}
-      <TouchableOpacity
-        style={styles.videoContainer}
-        onPress={() => setShowControls(!showControls)}
-        activeOpacity={1}
-      >
-        <Video
-          ref={videoRef}
-          source={{ uri: videoStreams[currentView] }}
-          style={styles.video}
-          resizeMode="contain"
-          paused={!isPlaying}
-          rate={playbackSpeed}
-          onProgress={onVideoProgress}
-          onLoad={onVideoLoad}
-          onError={(error) => console.error('Video error:', error)}
-        />
-
-        {/* Video Controls Overlay */}
-        {showControls && (
-          <View style={styles.controlsOverlay}>
-            {/* Top Controls */}
-            <View style={styles.topControls}>
-              <Text style={styles.videoTitle}>{danceName}</Text>
-              <PronunciationButton
-                text={irishName}
-                audioUrl={`https://example.com/audio/${irishName.toLowerCase().replace(' ', '-')}.mp3`}
-                size="small"
-              />
-            </View>
-
-            {/* Center Play Button */}
-            <TouchableOpacity style={styles.centerPlayButton} onPress={togglePlayPause}>
-              <Icon
-                name={isPlaying ? 'pause' : 'play-arrow'}
-                size={60}
-                color={CulturalTheme.colors.onPrimary}
-              />
-            </TouchableOpacity>
-
-            {/* Bottom Controls */}
-            <View style={styles.bottomControls}>
-              <View style={styles.progressContainer}>
-                <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
-                <Slider
-                  style={styles.progressSlider}
-                  minimumValue={0}
-                  maximumValue={duration}
-                  value={currentTime}
-                  onValueChange={(value) => videoRef.current?.seek(value)}
-                  minimumTrackTintColor={CulturalTheme.colors.secondary}
-                  maximumTrackTintColor={CulturalTheme.colors.outline}
-                  thumbStyle={{ backgroundColor: CulturalTheme.colors.secondary }}
-                />
-                <Text style={styles.timeText}>{formatTime(duration)}</Text>
-              </View>
-
-              <View style={styles.controlButtons}>
-                <IconButton
-                  icon={() => <Text style={styles.speedText}>{playbackSpeed}x</Text>}
-                  onPress={changePlaybackSpeed}
-                  size={20}
-                  iconColor={CulturalTheme.colors.onPrimary}
-                />
-                
-                <IconButton
-                  icon="info"
-                  onPress={() => setShowCulturalContext(true)}
-                  size={20}
-                  iconColor={CulturalTheme.colors.onPrimary}
-                />
-              </View>
-            </View>
-          </View>
+      <VideoContainer>
+        {currentView === '3d' ? (
+          <DanceFormation3D
+            danceName={danceName}
+            currentStep={currentStep}
+            steps={steps}
+            onStepChange={goToStep}
+          />
+        ) : (
+          <YouTube
+            ref={videoRef}
+            videoId={getCurrentVideoId()}
+            opts={videoOptions}
+            onReady={() => console.log('Video ready')}
+          />
         )}
-      </TouchableOpacity>
+      </VideoContainer>
 
-      {/* View Selector */}
-      <View style={styles.viewSelector}>
-        {Object.keys(videoStreams).map((view) => (
-          <TouchableOpacity
+      <ViewSelector>
+        {(['frontView', 'sideView', 'overhead', '3d'] as ViewType[]).map((view) => (
+          <ViewButton
             key={view}
-            style={[
-              styles.viewButton,
-              currentView === view && styles.activeViewButton,
-            ]}
-            onPress={() => setCurrentView(view as any)}
+            active={currentView === view}
+            onClick={() => setCurrentView(view)}
           >
-            <Icon
-              name={getViewIcon(view)}
-              size={24}
-              color={
-                currentView === view
-                  ? CulturalTheme.colors.onPrimary
-                  : CulturalTheme.colors.onSurface
-              }
-            />
-            <Text
-              style={[
-                styles.viewButtonText,
-                currentView === view && styles.activeViewButtonText,
-              ]}
-            >
-              {view === 'frontView' ? 'Front' : view === 'sideView' ? 'Side' : 'Top'}
-            </Text>
-          </TouchableOpacity>
+            <ViewIcon>{getViewIcon(view)}</ViewIcon>
+            <ViewLabel>{getViewLabel(view)}</ViewLabel>
+          </ViewButton>
         ))}
-      </View>
+      </ViewSelector>
 
-      {/* Current Step Information */}
       {currentStepData && (
-        <Surface style={styles.stepInfo} elevation={2}>
-          <View style={styles.stepHeader}>
-            <Text style={styles.stepNumber}>Step {currentStepData.stepNumber}</Text>
-            <Text style={styles.stepTitle}>{currentStepData.english}</Text>
-            {completedSteps.includes(currentStep) && (
-              <Icon name="check-circle" size={24} color={CulturalTheme.colors.tertiary} />
-            )}
-          </View>
+        <StepInfo>
+          <StepHeader>
+            <StepNumber>Step {currentStepData.stepNumber}</StepNumber>
+            <StepTitle>{currentStepData.english}</StepTitle>
+            {completedSteps.includes(currentStep) && <span>✅</span>}
+          </StepHeader>
 
           <PronunciationButton
             text={`${currentStepData.irishTerm} (${currentStepData.phonetic})`}
             audioUrl={`https://example.com/audio/${currentStepData.irishTerm.toLowerCase()}.mp3`}
             size="medium"
-            style={styles.stepPronunciation}
           />
 
-          <Text style={styles.stepDescription}>{currentStepData.description}</Text>
-          
+          <StepDescription>{currentStepData.description}</StepDescription>
+
           {currentStepData.culturalNote && (
-            <View style={styles.culturalNote}>
-              <Icon name="info" size={16} color={CulturalTheme.colors.primary} />
-              <Text style={styles.culturalNoteText}>{currentStepData.culturalNote}</Text>
-            </View>
+            <CulturalNote>
+              <span>ℹ️</span>
+              <CulturalNoteText>{currentStepData.culturalNote}</CulturalNoteText>
+            </CulturalNote>
           )}
 
-          <Button
-            mode="contained"
-            onPress={markStepComplete}
+          <CompleteStepButton
+            completed={completedSteps.includes(currentStep)}
+            onClick={markStepComplete}
             disabled={completedSteps.includes(currentStep)}
-            style={styles.completeStepButton}
           >
             {completedSteps.includes(currentStep) ? 'Step Completed' : 'Mark Step Complete'}
-          </Button>
-        </Surface>
+          </CompleteStepButton>
+        </StepInfo>
       )}
 
-      {/* Step Navigation with Gesture Support */}
-      <PanGestureHandler onGestureEvent={onSwipeGesture}>
-        <View style={styles.stepNavigation}>
-          <Text style={styles.navigationTitle}>Dance Steps</Text>
-          <Text style={styles.swipeHint}>Swipe left/right to navigate steps</Text>
-          <View style={styles.stepButtons}>
-            {steps.map((step, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  styles.stepNavigationButton,
-                  currentStep === index && styles.currentStepButton,
-                  completedSteps.includes(index) && styles.completedStepButton,
-                ]}
-                onPress={() => goToStep(index)}
-                accessibilityLabel={`Dance step ${index + 1}${completedSteps.includes(index) ? ' completed' : ''}`}
-                accessibilityRole="button"
-                accessibilityState={{ selected: currentStep === index }}
-              >
-                <Text
-                  style={[
-                    styles.stepNavigationText,
-                    (currentStep === index || completedSteps.includes(index)) &&
-                      styles.activeStepNavigationText,
-                  ]}
-                >
-                  {index + 1}
-                </Text>
-                {completedSteps.includes(index) && (
-                  <Icon
-                    name="check"
-                    size={12}
-                    color={CulturalTheme.colors.onTertiary}
-                    style={styles.stepCheckmark}
-                  />
-                )}
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      </PanGestureHandler>
-    </View>
+      <StepNavigation>
+        <NavigationTitle>Dance Steps</NavigationTitle>
+        <StepButtons>
+          {steps.map((step, index) => (
+            <StepNavigationButton
+              key={index}
+              current={currentStep === index}
+              completed={completedSteps.includes(index)}
+              onClick={() => goToStep(index)}
+            >
+              {index + 1}
+            </StepNavigationButton>
+          ))}
+        </StepButtons>
+      </StepNavigation>
+
+      {/* Music Player */}
+      {musicVideo && (
+        <>
+          <button
+            style={{
+              position: 'fixed',
+              bottom: '20px',
+              right: '20px',
+              background: CulturalTheme.colors.secondary,
+              color: CulturalTheme.colors.onSecondary,
+              border: 'none',
+              borderRadius: '50%',
+              width: '60px',
+              height: '60px',
+              fontSize: '24px',
+              cursor: 'pointer',
+              zIndex: 1001,
+            }}
+            onClick={() => setShowMusicPlayer(!showMusicPlayer)}
+          >
+            🎵
+          </button>
+
+          {showMusicPlayer && (
+            <MusicPlayer>
+              <MusicHeader>Traditional Irish Music</MusicHeader>
+              <YouTube
+                ref={musicRef}
+                videoId={musicVideo}
+                opts={musicOptions}
+              />
+            </MusicPlayer>
+          )}
+        </>
+      )}
+    </Container>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: CulturalTheme.colors.background,
-  },
-  culturalBanner: {
-    backgroundColor: CulturalTheme.colors.primaryContainer,
-    padding: CulturalSpacing.md,
-    margin: CulturalSpacing.md,
-    borderRadius: CulturalBorderRadius.md,
-  },
-  culturalTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: CulturalTheme.colors.onPrimaryContainer,
-    marginBottom: CulturalSpacing.sm,
-  },
-  culturalText: {
-    fontSize: 14,
-    color: CulturalTheme.colors.onPrimaryContainer,
-    lineHeight: 20,
-    marginBottom: CulturalSpacing.md,
-  },
-  videoContainer: {
-    width,
-    height: videoHeight,
-    backgroundColor: '#000',
-    position: 'relative',
-  },
-  video: {
-    width: '100%',
-    height: '100%',
-  },
-  controlsOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    justifyContent: 'space-between',
-  },
-  topControls: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: CulturalSpacing.md,
-    paddingTop: CulturalSpacing.xl,
-  },
-  videoTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: CulturalTheme.colors.onPrimary,
-    flex: 1,
-  },
-  centerPlayButton: {
-    alignSelf: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: 40,
-    padding: CulturalSpacing.md,
-  },
-  bottomControls: {
-    padding: CulturalSpacing.md,
-  },
-  progressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: CulturalSpacing.sm,
-  },
-  timeText: {
-    fontSize: 12,
-    color: CulturalTheme.colors.onPrimary,
-    fontWeight: '500',
-  },
-  progressSlider: {
-    flex: 1,
-    marginHorizontal: CulturalSpacing.sm,
-  },
-  controlButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  speedText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: CulturalTheme.colors.onPrimary,
-  },
-  viewSelector: {
-    flexDirection: 'row',
-    backgroundColor: CulturalTheme.colors.surface,
-    paddingVertical: CulturalSpacing.sm,
-  },
-  viewButton: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: CulturalSpacing.sm,
-    borderRadius: CulturalBorderRadius.sm,
-    marginHorizontal: CulturalSpacing.xs,
-  },
-  activeViewButton: {
-    backgroundColor: CulturalTheme.colors.primary,
-  },
-  viewButtonText: {
-    fontSize: 12,
-    color: CulturalTheme.colors.onSurface,
-    marginTop: CulturalSpacing.xs,
-  },
-  activeViewButtonText: {
-    color: CulturalTheme.colors.onPrimary,
-    fontWeight: '600',
-  },
-  stepInfo: {
-    backgroundColor: CulturalTheme.colors.surface,
-    margin: CulturalSpacing.md,
-    padding: CulturalSpacing.lg,
-    borderRadius: CulturalBorderRadius.lg,
-  },
-  stepHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: CulturalSpacing.md,
-  },
-  stepNumber: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: CulturalTheme.colors.primary,
-    marginRight: CulturalSpacing.sm,
-  },
-  stepTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: CulturalTheme.colors.onSurface,
-    flex: 1,
-  },
-  stepPronunciation: {
-    alignSelf: 'flex-start',
-    marginBottom: CulturalSpacing.md,
-  },
-  stepDescription: {
-    fontSize: 14,
-    color: CulturalTheme.colors.onSurface,
-    lineHeight: 20,
-    marginBottom: CulturalSpacing.md,
-  },
-  culturalNote: {
-    flexDirection: 'row',
-    backgroundColor: CulturalTheme.colors.primaryContainer,
-    borderRadius: CulturalBorderRadius.sm,
-    padding: CulturalSpacing.sm,
-    marginBottom: CulturalSpacing.md,
-    gap: CulturalSpacing.sm,
-  },
-  culturalNoteText: {
-    fontSize: 12,
-    color: CulturalTheme.colors.onPrimaryContainer,
-    flex: 1,
-    lineHeight: 16,
-  },
-  completeStepButton: {
-    borderRadius: CulturalBorderRadius.md,
-  },
-  stepNavigation: {
-    backgroundColor: CulturalTheme.colors.surface,
-    padding: CulturalSpacing.md,
-  },
-  navigationTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: CulturalTheme.colors.onSurface,
-    marginBottom: CulturalSpacing.sm,
-  },
-  swipeHint: {
-    fontSize: 12,
-    color: CulturalTheme.colors.onSurfaceVariant,
-    marginBottom: CulturalSpacing.md,
-    textAlign: 'center',
-  },
-  stepButtons: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: CulturalSpacing.sm,
-  },
-  stepNavigationButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: CulturalTheme.colors.outline,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  currentStepButton: {
-    backgroundColor: CulturalTheme.colors.primary,
-  },
-  completedStepButton: {
-    backgroundColor: CulturalTheme.colors.tertiary,
-  },
-  stepNavigationText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: CulturalTheme.colors.onSurface,
-  },
-  activeStepNavigationText: {
-    color: CulturalTheme.colors.onPrimary,
-  },
-  stepCheckmark: {
-    position: 'absolute',
-    bottom: -2,
-    right: -2,
-    backgroundColor: CulturalTheme.colors.surface,
-    borderRadius: 6,
-  },
-});

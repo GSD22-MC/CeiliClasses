@@ -1,30 +1,141 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ImageBackground,
-  Dimensions,
-  StatusBar,
-} from 'react-native';
-import { Button, Surface } from 'react-native-paper';
-import { StackNavigationProp } from '@react-navigation/stack';
-import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-
-import { CulturalTheme, CulturalSpacing, CulturalBorderRadius } from '../../theme/CulturalTheme';
-import { OnboardingStackParamList } from '../../navigation/OnboardingNavigator';
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { View, Text, TouchableOpacity, SafeAreaView } from '../../components/ui';
+import { CulturalCard } from '../../components/ui/CulturalCard';
+import { CulturalTheme } from '../../theme/CulturalTheme';
 import { PronunciationButton } from '../../components/PronunciationButton';
 
-type WelcomeScreenNavigationProp = StackNavigationProp<OnboardingStackParamList, 'Welcome'>;
+// Styled Components
+const Container = styled(View)`
+  min-height: 100vh;
+  background-image: linear-gradient(
+    rgba(0, 102, 51, 0.8),
+    rgba(0, 102, 51, 0.6),
+    rgba(0, 102, 51, 0.9)
+  ), url('https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&h=600&fit=crop&crop=center');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: ${({ theme }) => theme.spacing.large};
+`;
 
-interface Props {
-  navigation: WelcomeScreenNavigationProp;
-}
+const HeaderSection = styled(View)`
+  align-items: center;
+  padding-top: ${({ theme }) => theme.spacing.xl};
+`;
 
-const { width, height } = Dimensions.get('window');
+const HeaderIcon = styled.div`
+  font-size: 60px;
+  color: ${({ theme }) => theme.colors.secondary};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
 
-const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
+const MainTitle = styled(Text)`
+  font-size: 36px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.onPrimary};
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const Subtitle = styled(Text)`
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.onPrimary};
+  text-align: center;
+  opacity: 0.9;
+  padding: 0 ${({ theme }) => theme.spacing.medium};
+`;
+
+const WelcomeCard = styled(CulturalCard)`
+  margin: ${({ theme }) => theme.spacing.large} 0;
+`;
+
+const GreetingIrish = styled(Text)`
+  font-size: 28px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.primary};
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const PronunciationContainer = styled(View)`
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const GreetingTranslation = styled(Text)`
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+  font-style: italic;
+`;
+
+const WelcomeMessage = styled(Text)`
+  font-size: 16px;
+  line-height: 1.5;
+  color: ${({ theme }) => theme.colors.onSurface};
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+`;
+
+const BenefitsList = styled(View)`
+  gap: ${({ theme }) => theme.spacing.medium};
+`;
+
+const BenefitItem = styled(View)`
+  flex-direction: row;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.small};
+`;
+
+const BenefitIcon = styled.span`
+  font-size: 20px;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+const BenefitText = styled(Text)`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.onSurface};
+  flex: 1;
+`;
+
+const ActionSection = styled(View)`
+  align-items: center;
+`;
+
+const BeginButton = styled(TouchableOpacity)`
+  background-color: ${({ theme }) => theme.colors.secondary};
+  padding: ${({ theme }) => theme.spacing.medium} ${({ theme }) => theme.spacing.xl};
+  border-radius: ${({ theme }) => theme.borderRadius.large};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: ${({ theme }) => theme.elevation.high.boxShadow};
+  }
+`;
+
+const BeginButtonText = styled(Text)`
+  font-size: 18px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onSecondary};
+  text-align: center;
+`;
+
+const TimeCommitment = styled(Text)`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.onPrimary};
+  opacity: 0.8;
+`;
+
+const WelcomeScreen: React.FC = () => {
+  const navigate = useNavigate();
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
@@ -37,210 +148,81 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   const handleBeginJourney = () => {
-    navigation.navigate('CulturalIntro');
+    navigate('/onboarding/cultural-intro');
   };
 
   return (
-    <>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-      <ImageBackground
-        source={{
-          uri: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&h=600&fit=crop&crop=center',
-        }}
-        style={styles.backgroundImage}
-        resizeMode="cover"
-      >
-        <LinearGradient
-          colors={['rgba(0, 102, 51, 0.8)', 'rgba(0, 102, 51, 0.6)', 'rgba(0, 102, 51, 0.9)']}
-          style={styles.overlay}
-        >
-          <View style={styles.container}>
-            {showContent && (
-              <>
-                {/* Header Section */}
-                <View style={styles.headerSection}>
-                  <Icon 
-                    name="celebration" 
-                    size={60} 
-                    color={CulturalTheme.colors.secondary}
-                    style={styles.headerIcon}
-                  />
-                  <Text style={styles.mainTitle}>CeiliClasses</Text>
-                  <Text style={styles.subtitle}>
-                    Learn authentic Irish ceili dancing with cultural confidence
-                  </Text>
-                </View>
+    <Container>
+      <SafeAreaView>
+        {showContent && (
+          <>
+            {/* Header Section */}
+            <HeaderSection>
+              <HeaderIcon>🎉</HeaderIcon>
+              <MainTitle>CeiliClasses</MainTitle>
+              <Subtitle>
+                Learn authentic Irish ceili dancing with cultural confidence
+              </Subtitle>
+            </HeaderSection>
 
-                {/* Welcome Message Section */}
-                <Surface style={styles.welcomeCard} elevation={4}>
-                  <Text style={styles.greetingIrish}>Céad míle fáilte!</Text>
-                  
-                  <PronunciationButton
-                    text="KAH-ed MEE-leh FALL-che"
-                    audioUrl="https://example.com/audio/cead-mile-failte.mp3"
-                    size="small"
-                    style={styles.pronunciationButton}
-                  />
-                  
-                  <Text style={styles.greetingTranslation}>
-                    One hundred thousand welcomes!
-                  </Text>
-                  
-                  <Text style={styles.welcomeMessage}>
-                    Welcome to your authentic Irish cultural journey. In just 60 minutes, 
-                    you'll learn to pronounce "ceili" correctly, master your first traditional 
-                    Irish dance, and join a welcoming community that celebrates Irish heritage.
-                  </Text>
+            {/* Welcome Message Section */}
+            <WelcomeCard culturalLevel="primary">
+              <GreetingIrish>Céad míle fáilte!</GreetingIrish>
+              
+              <PronunciationContainer>
+                <PronunciationButton
+                  text="KAH-ed MEE-leh FALL-che"
+                  audioUrl="https://example.com/audio/cead-mile-failte.mp3"
+                  size="small"
+                />
+              </PronunciationContainer>
+              
+              <GreetingTranslation>
+                One hundred thousand welcomes!
+              </GreetingTranslation>
+              
+              <WelcomeMessage>
+                Welcome to your authentic Irish cultural journey. In just 60 minutes, 
+                you'll learn to pronounce "ceili" correctly, master your first traditional 
+                Irish dance, and join a welcoming community that celebrates Irish heritage.
+              </WelcomeMessage>
 
-                  <View style={styles.benefitsList}>
-                    <View style={styles.benefitItem}>
-                      <Icon name="volume-up" size={20} color={CulturalTheme.colors.primary} />
-                      <Text style={styles.benefitText}>
-                        Native Irish pronunciation guides
-                      </Text>
-                    </View>
-                    <View style={styles.benefitItem}>
-                      <Icon name="groups" size={20} color={CulturalTheme.colors.primary} />
-                      <Text style={styles.benefitText}>
-                        Welcoming cultural community
-                      </Text>
-                    </View>
-                    <View style={styles.benefitItem}>
-                      <Icon name="school" size={20} color={CulturalTheme.colors.primary} />
-                      <Text style={styles.benefitText}>
-                        Authentic cultural education
-                      </Text>
-                    </View>
-                  </View>
-                </Surface>
+              <BenefitsList>
+                <BenefitItem>
+                  <BenefitIcon>🔊</BenefitIcon>
+                  <BenefitText>
+                    Native Irish pronunciation guides
+                  </BenefitText>
+                </BenefitItem>
+                <BenefitItem>
+                  <BenefitIcon>👥</BenefitIcon>
+                  <BenefitText>
+                    Welcoming cultural community
+                  </BenefitText>
+                </BenefitItem>
+                <BenefitItem>
+                  <BenefitIcon>🎓</BenefitIcon>
+                  <BenefitText>
+                    Authentic cultural education
+                  </BenefitText>
+                </BenefitItem>
+              </BenefitsList>
+            </WelcomeCard>
 
-                {/* Action Section */}
-                <View style={styles.actionSection}>
-                  <Button
-                    mode="contained"
-                    onPress={handleBeginJourney}
-                    style={styles.beginButton}
-                    contentStyle={styles.beginButtonContent}
-                    labelStyle={styles.beginButtonLabel}
-                  >
-                    Begin Your Cultural Journey
-                  </Button>
-                  
-                  <Text style={styles.timeCommitment}>
-                    ⏱️ Complete in under 60 minutes
-                  </Text>
-                </View>
-              </>
-            )}
-          </View>
-        </LinearGradient>
-      </ImageBackground>
-    </>
+            {/* Action Section */}
+            <ActionSection>
+              <BeginButton onPress={handleBeginJourney}>
+                <BeginButtonText>Begin Your Cultural Journey</BeginButtonText>
+              </BeginButton>
+              
+              <TimeCommitment>
+                ⏱️ Complete in under 60 minutes
+              </TimeCommitment>
+            </ActionSection>
+          </>
+        )}
+      </SafeAreaView>
+    </Container>
   );
 };
 
-const styles = StyleSheet.create({
-  backgroundImage: {
-    width,
-    height,
-  },
-  overlay: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: CulturalSpacing.lg,
-    paddingTop: StatusBar.currentHeight || 40,
-    paddingBottom: CulturalSpacing.xl,
-    justifyContent: 'space-between',
-  },
-  headerSection: {
-    alignItems: 'center',
-    paddingTop: CulturalSpacing.xl,
-  },
-  headerIcon: {
-    marginBottom: CulturalSpacing.md,
-  },
-  mainTitle: {
-    fontSize: 36,
-    fontWeight: '700',
-    color: CulturalTheme.colors.onPrimary,
-    textAlign: 'center',
-    marginBottom: CulturalSpacing.sm,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: CulturalTheme.colors.onPrimary,
-    textAlign: 'center',
-    opacity: 0.9,
-    paddingHorizontal: CulturalSpacing.md,
-  },
-  welcomeCard: {
-    backgroundColor: CulturalTheme.colors.surface,
-    borderRadius: CulturalBorderRadius.lg,
-    padding: CulturalSpacing.lg,
-    marginVertical: CulturalSpacing.lg,
-  },
-  greetingIrish: {
-    fontSize: 28,
-    fontWeight: '600',
-    color: CulturalTheme.colors.primary,
-    textAlign: 'center',
-    marginBottom: CulturalSpacing.sm,
-  },
-  pronunciationButton: {
-    alignSelf: 'center',
-    marginBottom: CulturalSpacing.md,
-  },
-  greetingTranslation: {
-    fontSize: 16,
-    color: CulturalTheme.colors.onSurfaceVariant,
-    textAlign: 'center',
-    marginBottom: CulturalSpacing.lg,
-    fontStyle: 'italic',
-  },
-  welcomeMessage: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: CulturalTheme.colors.onSurface,
-    textAlign: 'center',
-    marginBottom: CulturalSpacing.lg,
-  },
-  benefitsList: {
-    gap: CulturalSpacing.md,
-  },
-  benefitItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: CulturalSpacing.sm,
-  },
-  benefitText: {
-    fontSize: 14,
-    color: CulturalTheme.colors.onSurface,
-    flex: 1,
-  },
-  actionSection: {
-    alignItems: 'center',
-  },
-  beginButton: {
-    backgroundColor: CulturalTheme.colors.secondary,
-    borderRadius: CulturalBorderRadius.lg,
-    marginBottom: CulturalSpacing.md,
-  },
-  beginButtonContent: {
-    paddingVertical: CulturalSpacing.sm,
-    paddingHorizontal: CulturalSpacing.xl,
-  },
-  beginButtonLabel: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: CulturalTheme.colors.onSecondary,
-  },
-  timeCommitment: {
-    fontSize: 14,
-    color: CulturalTheme.colors.onPrimary,
-    opacity: 0.8,
-  },
-});
-
-export default WelcomeScreen;

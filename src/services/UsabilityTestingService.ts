@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// Web localStorage for usability testing
 
 interface TestScenario {
   id: string;
@@ -259,7 +259,7 @@ class UsabilityTestingService {
       scenarios: ['onboarding_60s', 'first_dance_lesson', 'community_engagement']
     };
 
-    await AsyncStorage.setItem(`test_schedule_${userId}`, JSON.stringify(testSchedule));
+    localStorage.setItem(`test_schedule_${userId}`, JSON.stringify(testSchedule));
   }
 
   async generateWeeklyReport(): Promise<any> {
@@ -322,14 +322,14 @@ class UsabilityTestingService {
   }
 
   private async saveSession(session: TestSession): Promise<void> {
-    await AsyncStorage.setItem(`test_session_${session.id}`, JSON.stringify(session));
+    localStorage.setItem(`test_session_${session.id}`, JSON.stringify(session));
   }
 
   private async getAllSessions(): Promise<TestSession[]> {
     try {
-      const keys = await AsyncStorage.getAllKeys();
+      const keys = localStorage.getAllKeys();
       const sessionKeys = keys.filter(key => key.startsWith('test_session_'));
-      const sessions = await AsyncStorage.multiGet(sessionKeys);
+      const sessions = localStorage.multiGet(sessionKeys);
       
       return sessions
         .map(([_, value]) => value ? JSON.parse(value) : null)

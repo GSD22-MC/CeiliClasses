@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// Web storage for analytics
 
 interface AnalyticsEvent {
   eventName: string;
@@ -82,7 +82,7 @@ class AnalyticsService {
   // Onboarding Tracking
   async trackOnboardingStart(): Promise<void> {
     const startTime = Date.now();
-    await AsyncStorage.setItem('onboarding_start_time', startTime.toString());
+    localStorage.setItem('onboarding_start_time', startTime.toString());
     
     await this.trackEvent('onboarding_started', {
       startTime
@@ -90,7 +90,7 @@ class AnalyticsService {
   }
 
   async trackOnboardingComplete(): Promise<void> {
-    const startTimeStr = await AsyncStorage.getItem('onboarding_start_time');
+    const startTimeStr = localStorage.getItem('onboarding_start_time');
     const completionTime = Date.now();
     const startTime = startTimeStr ? parseInt(startTimeStr) : completionTime;
     const duration = (completionTime - startTime) / 1000;
@@ -116,7 +116,7 @@ class AnalyticsService {
   // Dance Lesson Tracking
   async trackLessonStart(lessonId: string, lessonName: string): Promise<void> {
     const startTime = Date.now();
-    await AsyncStorage.setItem(`lesson_${lessonId}_start_time`, startTime.toString());
+    localStorage.setItem(`lesson_${lessonId}_start_time`, startTime.toString());
 
     await this.trackEvent('lesson_started', {
       lessonId,
@@ -126,7 +126,7 @@ class AnalyticsService {
   }
 
   async trackLessonComplete(lessonId: string, lessonName: string): Promise<void> {
-    const startTimeStr = await AsyncStorage.getItem(`lesson_${lessonId}_start_time`);
+    const startTimeStr = localStorage.getItem(`lesson_${lessonId}_start_time`);
     const completionTime = Date.now();
     const startTime = startTimeStr ? parseInt(startTimeStr) : completionTime;
     const duration = (completionTime - startTime) / 1000;
@@ -223,7 +223,7 @@ class AnalyticsService {
 
   // Retention Tracking
   async trackUserReturn(): Promise<void> {
-    const lastVisit = await AsyncStorage.getItem('last_visit_date');
+    const lastVisit = localStorage.getItem('last_visit_date');
     const today = new Date().toDateString();
     
     if (lastVisit && lastVisit !== today) {
@@ -237,12 +237,12 @@ class AnalyticsService {
       });
     }
     
-    await AsyncStorage.setItem('last_visit_date', today);
+    localStorage.setItem('last_visit_date', today);
   }
 
   // Metrics Calculation
   async getUserMetrics(userId: string): Promise<UserMetrics> {
-    const metricsStr = await AsyncStorage.getItem(`user_metrics_${userId}`);
+    const metricsStr = localStorage.getItem(`user_metrics_${userId}`);
     const defaultMetrics: UserMetrics = {
       totalSessionTime: 0,
       sessionsCount: 0,
@@ -328,7 +328,7 @@ class AnalyticsService {
     const metrics = await this.getUserMetrics(userId);
     (metrics as any)[key] = value;
     
-    await AsyncStorage.setItem(`user_metrics_${userId}`, JSON.stringify(metrics));
+    localStorage.setItem(`user_metrics_${userId}`, JSON.stringify(metrics));
   }
 
   private async incrementUserMetric(key: keyof UserMetrics): Promise<void> {
@@ -336,7 +336,7 @@ class AnalyticsService {
     const metrics = await this.getUserMetrics(userId);
     (metrics as any)[key] = ((metrics as any)[key] || 0) + 1;
     
-    await AsyncStorage.setItem(`user_metrics_${userId}`, JSON.stringify(metrics));
+    localStorage.setItem(`user_metrics_${userId}`, JSON.stringify(metrics));
   }
 
   private async persistEvent(event: AnalyticsEvent): Promise<void> {
@@ -346,12 +346,12 @@ class AnalyticsService {
     // Keep only last 1000 events to prevent storage bloat
     const recentEvents = existingEvents.slice(-1000);
     
-    await AsyncStorage.setItem('analytics_events', JSON.stringify(recentEvents));
+    localStorage.setItem('analytics_events', JSON.stringify(recentEvents));
   }
 
   private async getAllEvents(): Promise<AnalyticsEvent[]> {
     try {
-      const eventsStr = await AsyncStorage.getItem('analytics_events');
+      const eventsStr = localStorage.getItem('analytics_events');
       return eventsStr ? JSON.parse(eventsStr) : [];
     } catch (error) {
       console.error('Failed to load analytics events:', error);
@@ -396,8 +396,8 @@ class AnalyticsService {
   }
 
   async clearAnalyticsData(): Promise<void> {
-    await AsyncStorage.removeItem('analytics_events');
-    await AsyncStorage.removeItem('user_metrics_current_user');
+    localStorage.removeItem('analytics_events');
+    localStorage.removeItem('user_metrics_current_user');
     console.log('Analytics data cleared');
   }
 }

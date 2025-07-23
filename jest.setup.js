@@ -26,8 +26,10 @@ jest.mock('react-native-keychain', () => ({
   },
 }));
 
-// Mock react-native-vector-icons
-jest.mock('react-native-vector-icons/MaterialIcons', () => 'Icon');
+// Mock our custom Icon component for tests
+jest.mock('./src/components/ui/Icon', () => ({
+  Icon: 'Icon'
+}));
 
 // Mock react-native-sound
 jest.mock('react-native-sound', () => {

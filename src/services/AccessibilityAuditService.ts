@@ -1,4 +1,4 @@
-import { AccessibilityInfo, Platform } from 'react-native';
+// Web accessibility audit service - no React Native dependencies needed
 
 interface AccessibilityIssue {
   id: string;
@@ -207,9 +207,10 @@ class AccessibilityAuditService {
     const issues: AccessibilityIssue[] = [];
 
     try {
-      const isScreenReaderEnabled = await AccessibilityInfo.isScreenReaderEnabled();
+      // Web accessibility - check for screen reader using web APIs
+      const isScreenReaderEnabled = window.speechSynthesis !== undefined;
       
-      if (Platform.OS === 'ios') {
+      if (isScreenReaderEnabled) {
         // Check for VoiceOver compatibility
         issues.push({
           id: 'voiceover_support',

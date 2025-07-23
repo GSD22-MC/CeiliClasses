@@ -1,27 +1,220 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Alert,
-} from 'react-native';
-import { TextInput, Button, Surface, HelperText } from 'react-native-paper';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-
-import { CulturalTheme, CulturalSpacing, CulturalBorderRadius } from '../../theme/CulturalTheme';
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { View, Text, ScrollView, TouchableOpacity, SafeAreaView } from '../../components/ui';
+import { CulturalCard } from '../../components/ui/CulturalCard';
+import { CulturalTheme } from '../../theme/CulturalTheme';
 import { useAuthStore } from '../../stores/authStore';
 import { validateEmail, validatePassword, sanitizeInput, authRateLimiter } from '../../utils/validation';
 
-interface Props {
-  navigation: StackNavigationProp<any>;
-}
+// Styled Components
+const Container = styled(View)`
+  flex: 1;
+  background-color: ${({ theme }) => theme.colors.background};
+`;
 
-const LoginScreen: React.FC<Props> = ({ navigation }) => {
+const Content = styled(ScrollView)`
+  flex: 1;
+  padding: ${({ theme }) => theme.spacing.large};
+  justify-content: center;
+`;
+
+const Header = styled(View)`
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
+`;
+
+const HeaderIcon = styled.div`
+  font-size: 60px;
+  color: ${({ theme }) => theme.colors.primary};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const Title = styled(Text)`
+  font-size: 28px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.onBackground};
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+  text-align: center;
+`;
+
+const Subtitle = styled(Text)`
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  text-align: center;
+`;
+
+const FormContainer = styled(CulturalCard)`
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+`;
+
+const FormTitle = styled(Text)`
+  font-size: 20px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onSurface};
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+  text-align: center;
+`;
+
+const ErrorContainer = styled(View)`
+  flex-direction: row;
+  align-items: center;
+  background-color: ${({ theme }) => theme.colors.errorContainer};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  padding: ${({ theme }) => theme.spacing.small};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+  gap: ${({ theme }) => theme.spacing.small};
+`;
+
+const ErrorIcon = styled.span`
+  font-size: 20px;
+  color: ${({ theme }) => theme.colors.error};
+`;
+
+const ErrorText = styled(Text)`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.error};
+  flex: 1;
+`;
+
+const InputContainer = styled(View)`
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const InputWrapper = styled(View)`
+  position: relative;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const InputIcon = styled.span`
+  position: absolute;
+  left: ${({ theme }) => theme.spacing.medium};
+  font-size: 20px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  z-index: 1;
+`;
+
+const Input = styled.input<{ hasError?: boolean }>`
+  width: 100%;
+  padding: ${({ theme }) => theme.spacing.medium};
+  padding-left: 48px;
+  border: 2px solid ${({ hasError, theme }) => 
+    hasError ? theme.colors.error : theme.colors.outline};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  background-color: ${({ theme }) => theme.colors.surface};
+  color: ${({ theme }) => theme.colors.onSurface};
+  font-size: 16px;
+  
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const PasswordInput = styled(Input)`
+  padding-right: 48px;
+`;
+
+const PasswordToggle = styled(TouchableOpacity)`
+  position: absolute;
+  right: ${({ theme }) => theme.spacing.medium};
+  padding: ${({ theme }) => theme.spacing.small};
+`;
+
+const PasswordToggleIcon = styled.span`
+  font-size: 20px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+`;
+
+const HelperText = styled(Text)<{ error?: boolean }>`
+  font-size: 12px;
+  color: ${({ error, theme }) => error ? theme.colors.error : theme.colors.onSurfaceVariant};
+  margin-top: ${({ theme }) => theme.spacing.xs};
+  margin-left: ${({ theme }) => theme.spacing.small};
+  min-height: 16px;
+`;
+
+const LoginButton = styled(TouchableOpacity)<{ disabled?: boolean }>`
+  background-color: ${({ disabled, theme }) => 
+    disabled ? theme.colors.surfaceVariant : theme.colors.primary};
+  padding: ${({ theme }) => theme.spacing.medium};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  align-items: center;
+  margin-top: ${({ theme }) => theme.spacing.medium};
+  cursor: ${({ disabled }) => disabled ? 'not-allowed' : 'pointer'};
+  
+  &:hover {
+    background-color: ${({ disabled, theme }) => 
+      disabled ? theme.colors.surfaceVariant : theme.colors.primaryContainer};
+  }
+`;
+
+const LoginButtonText = styled(Text)<{ disabled?: boolean }>`
+  color: ${({ disabled, theme }) => 
+    disabled ? theme.colors.onSurfaceVariant : theme.colors.onPrimary};
+  font-size: 16px;
+  font-weight: 600;
+`;
+
+const ForgotButton = styled(TouchableOpacity)`
+  align-items: center;
+  margin-top: ${({ theme }) => theme.spacing.small};
+  padding: ${({ theme }) => theme.spacing.small};
+`;
+
+const ForgotButtonText = styled(Text)`
+  color: ${({ theme }) => theme.colors.primary};
+  font-size: 14px;
+`;
+
+const SignupContainer = styled(View)`
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+`;
+
+const SignupText = styled(Text)`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+`;
+
+const SignupButton = styled(TouchableOpacity)`
+  padding: ${({ theme }) => theme.spacing.small};
+`;
+
+const SignupButtonText = styled(Text)`
+  color: ${({ theme }) => theme.colors.primary};
+  font-size: 14px;
+  font-weight: 600;
+`;
+
+const QuoteContainer = styled(View)`
+  align-items: center;
+  margin-top: ${({ theme }) => theme.spacing.xl};
+  padding: 0 ${({ theme }) => theme.spacing.large};
+`;
+
+const Quote = styled(Text)`
+  font-size: 16px;
+  font-style: italic;
+  color: ${({ theme }) => theme.colors.primary};
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+`;
+
+const QuoteTranslation = styled(Text)`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  text-align: center;
+`;
+
+const LoginScreen: React.FC = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -61,10 +254,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     const identifier = sanitizeInput(email) || 'unknown';
     if (!authRateLimiter.isAllowed(identifier)) {
       const remainingTime = Math.ceil(authRateLimiter.getRemainingTime(identifier) / 1000);
-      Alert.alert(
-        'Too Many Attempts', 
-        `Please wait ${remainingTime} seconds before trying again.`
-      );
+      alert(`Too Many Attempts: Please wait ${remainingTime} seconds before trying again.`);
       return;
     }
 
@@ -79,231 +269,122 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       const sanitizedEmail = sanitizeInput(email);
       await login(sanitizedEmail, password);
     } catch (err) {
-      Alert.alert('Login Failed', 'Please check your credentials and try again.');
+      alert('Login Failed: Please check your credentials and try again.');
     }
   };
 
   const handleForgotPassword = () => {
     if (!email) {
-      Alert.alert('Email Required', 'Please enter your email address first.');
+      alert('Email Required: Please enter your email address first.');
       return;
     }
     // TODO: Implement password reset
-    Alert.alert('Password Reset', 'Password reset link sent to your email.');
+    alert('Password Reset: Password reset link sent to your email.');
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardContainer}
-      >
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+    <Container>
+      <SafeAreaView>
+        <Content>
           {/* Header */}
-          <View style={styles.header}>
-            <Icon name="celebration" size={60} color={CulturalTheme.colors.primary} />
-            <Text style={styles.title}>Welcome Back!</Text>
-            <Text style={styles.subtitle}>
+          <Header>
+            <HeaderIcon>🎉</HeaderIcon>
+            <Title>Welcome Back!</Title>
+            <Subtitle>
               Continue your Irish cultural journey
-            </Text>
-          </View>
+            </Subtitle>
+          </Header>
 
           {/* Login Form */}
-          <Surface style={styles.formContainer} elevation={2}>
-            <Text style={styles.formTitle}>Sign In</Text>
+          <FormContainer culturalLevel="primary">
+            <FormTitle>Sign In</FormTitle>
 
             {error && (
-              <View style={styles.errorContainer}>
-                <Icon name="error" size={20} color={CulturalTheme.colors.error} />
-                <Text style={styles.errorText}>{error}</Text>
-              </View>
+              <ErrorContainer>
+                <ErrorIcon>⚠️</ErrorIcon>
+                <ErrorText>{error}</ErrorText>
+              </ErrorContainer>
             )}
 
-            <TextInput
-              mode="outlined"
-              label="Email Address"
-              value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                if (emailError) validateEmail(text);
-              }}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-              error={!!emailError}
-              style={styles.input}
-              left={<TextInput.Icon icon="email" />}
-            />
-            <HelperText type="error" visible={!!emailError}>
-              {emailError}
-            </HelperText>
-
-            <TextInput
-              mode="outlined"
-              label="Password"
-              value={password}
-              onChangeText={(text) => {
-                setPassword(text);
-                if (passwordError) validatePassword(text);
-              }}
-              secureTextEntry={!showPassword}
-              autoComplete="password"
-              error={!!passwordError}
-              style={styles.input}
-              left={<TextInput.Icon icon="lock" />}
-              right={
-                <TextInput.Icon
-                  icon={showPassword ? 'visibility-off' : 'visibility'}
-                  onPress={() => setShowPassword(!showPassword)}
+            <InputContainer>
+              <InputWrapper>
+                <InputIcon>📧</InputIcon>
+                <Input
+                  type="email"
+                  placeholder="Email Address"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (emailError) validateEmailInput(e.target.value);
+                  }}
+                  autoComplete="email"
+                  hasError={!!emailError}
                 />
-              }
-            />
-            <HelperText type="error" visible={!!passwordError}>
-              {passwordError}
-            </HelperText>
+              </InputWrapper>
+              <HelperText error={!!emailError}>
+                {emailError || ' '}
+              </HelperText>
+            </InputContainer>
 
-            <Button
-              mode="contained"
+            <InputContainer>
+              <InputWrapper>
+                <InputIcon>🔒</InputIcon>
+                <PasswordInput
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (passwordError) validatePasswordInput(e.target.value);
+                  }}
+                  autoComplete="current-password"
+                  hasError={!!passwordError}
+                />
+                <PasswordToggle onPress={() => setShowPassword(!showPassword)}>
+                  <PasswordToggleIcon>
+                    {showPassword ? '🙈' : '👁️'}
+                  </PasswordToggleIcon>
+                </PasswordToggle>
+              </InputWrapper>
+              <HelperText error={!!passwordError}>
+                {passwordError || ' '}
+              </HelperText>
+            </InputContainer>
+
+            <LoginButton
               onPress={handleLogin}
-              loading={isLoading}
               disabled={isLoading}
-              style={styles.loginButton}
-              contentStyle={styles.loginButtonContent}
             >
-              Sign In
-            </Button>
+              <LoginButtonText disabled={isLoading}>
+                {isLoading ? 'Signing In...' : 'Sign In'}
+              </LoginButtonText>
+            </LoginButton>
 
-            <Button
-              mode="text"
-              onPress={handleForgotPassword}
-              style={styles.forgotButton}
-            >
-              Forgot Password?
-            </Button>
-          </Surface>
+            <ForgotButton onPress={handleForgotPassword}>
+              <ForgotButtonText>Forgot Password?</ForgotButtonText>
+            </ForgotButton>
+          </FormContainer>
 
           {/* Sign Up Link */}
-          <View style={styles.signupContainer}>
-            <Text style={styles.signupText}>Don't have an account? </Text>
-            <Button
-              mode="text"
-              onPress={() => navigation.navigate('Register')}
-              compact
-            >
-              Sign Up
-            </Button>
-          </View>
+          <SignupContainer>
+            <SignupText>Don't have an account? </SignupText>
+            <SignupButton onPress={() => navigate('/register')}>
+              <SignupButtonText>Sign Up</SignupButtonText>
+            </SignupButton>
+          </SignupContainer>
 
           {/* Cultural Quote */}
-          <View style={styles.quoteContainer}>
-            <Text style={styles.quote}>
+          <QuoteContainer>
+            <Quote>
               "Níl aon tinteán mar do thinteán féin"
-            </Text>
-            <Text style={styles.quoteTranslation}>
+            </Quote>
+            <QuoteTranslation>
               There's no hearth like your own hearth
-            </Text>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+            </QuoteTranslation>
+          </QuoteContainer>
+        </Content>
+      </SafeAreaView>
+    </Container>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: CulturalTheme.colors.background,
-  },
-  keyboardContainer: {
-    flex: 1,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    padding: CulturalSpacing.lg,
-    justifyContent: 'center',
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: CulturalSpacing.xl,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: CulturalTheme.colors.onBackground,
-    marginTop: CulturalSpacing.md,
-    marginBottom: CulturalSpacing.sm,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: CulturalTheme.colors.onSurfaceVariant,
-    textAlign: 'center',
-  },
-  formContainer: {
-    backgroundColor: CulturalTheme.colors.surface,
-    borderRadius: CulturalBorderRadius.lg,
-    padding: CulturalSpacing.lg,
-    marginBottom: CulturalSpacing.lg,
-  },
-  formTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: CulturalTheme.colors.onSurface,
-    marginBottom: CulturalSpacing.lg,
-    textAlign: 'center',
-  },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: CulturalColors.errorLight + '20',
-    borderRadius: CulturalBorderRadius.sm,
-    padding: CulturalSpacing.sm,
-    marginBottom: CulturalSpacing.md,
-    gap: CulturalSpacing.sm,
-  },
-  errorText: {
-    fontSize: 14,
-    color: CulturalTheme.colors.error,
-    flex: 1,
-  },
-  input: {
-    marginBottom: CulturalSpacing.sm,
-  },
-  loginButton: {
-    marginTop: CulturalSpacing.md,
-    borderRadius: CulturalBorderRadius.md,
-  },
-  loginButtonContent: {
-    paddingVertical: CulturalSpacing.sm,
-  },
-  forgotButton: {
-    marginTop: CulturalSpacing.sm,
-  },
-  signupContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  signupText: {
-    fontSize: 14,
-    color: CulturalTheme.colors.onSurfaceVariant,
-  },
-  quoteContainer: {
-    alignItems: 'center',
-    marginTop: CulturalSpacing.xl,
-    paddingHorizontal: CulturalSpacing.lg,
-  },
-  quote: {
-    fontSize: 16,
-    fontStyle: 'italic',
-    color: CulturalTheme.colors.primary,
-    textAlign: 'center',
-    marginBottom: CulturalSpacing.xs,
-  },
-  quoteTranslation: {
-    fontSize: 12,
-    color: CulturalTheme.colors.onSurfaceVariant,
-    textAlign: 'center',
-  },
-});
-
-export default LoginScreen;

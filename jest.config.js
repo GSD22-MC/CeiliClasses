@@ -10,7 +10,7 @@ module.exports = {
     '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|react-native-vector-icons|react-native-paper|react-navigation|@react-navigation)/)',
+    'node_modules/(?!(react-native|@react-native|react-native-paper|react-navigation|@react-navigation)/)',
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapping: {

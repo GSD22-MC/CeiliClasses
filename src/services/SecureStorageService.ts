@@ -1,10 +1,10 @@
 /**
  * Secure Storage Service using React Native Keychain
- * Replaces insecure AsyncStorage for sensitive data
+ * Replaces insecure localStorage for sensitive data
  * Includes fallback for when Keychain is unavailable
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// Web localStorage for secure storage fallback
 
 // Dynamic import with fallback
 let Keychain: any = null;
@@ -40,9 +40,9 @@ export class SecureStorageService {
           token
         );
       } else {
-        // Fallback to AsyncStorage with warning
+        // Fallback to localStorage with warning
         console.warn('Using insecure storage for auth token - Keychain unavailable');
-        await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
+        localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
       }
     } catch (error) {
       console.error(__DEV__ && 'Failed to store auth token securely:', error);
@@ -62,8 +62,8 @@ export class SecureStorageService {
         }
         return null;
       } else {
-        // Fallback to AsyncStorage
-        return await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+        // Fallback to localStorage
+        return localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
       }
     } catch (error) {
       console.error(__DEV__ && 'Failed to retrieve auth token:', error);
@@ -72,7 +72,7 @@ export class SecureStorageService {
   }
 
   /**
-   * Store user data securely (non-sensitive parts can stay in AsyncStorage)
+   * Store user data securely (non-sensitive parts can stay in localStorage)
    */
   static async storeUserCredentials(username: string, encryptedData: string): Promise<void> {
     try {

@@ -1,104 +1,107 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
-import { Surface } from 'react-native-paper';
-import NetInfo from '@react-native-netinfo/netinfo';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-
-import { CulturalTheme, CulturalSpacing, CulturalBorderRadius } from '../theme/CulturalTheme';
+import styled from 'styled-components';
+import { View, Text, Icon } from './ui';
+import { CulturalCard } from './ui/CulturalCard';
+import { CulturalTheme } from '../theme/CulturalTheme';
 import { offlineService } from '../services/OfflineService';
 
 interface NetworkStatusIndicatorProps {
-  style?: any;
+  style?: React.CSSProperties;
+  className?: string;
 }
 
-export const NetworkStatusIndicator: React.FC<NetworkStatusIndicatorProps> = ({ style }) => {
+// Styled Components
+const Container = styled(View)<{ isVisible: boolean }>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  transform: translateY(${({ isVisible }) => isVisible ? '0' : '-100px'});
+  transition: transform 0.3s ease;
+`;
+
+const StatusCard = styled(CulturalCard)`
+  margin: ${({ theme }) => theme.spacing.small} ${({ theme }) => theme.spacing.medium} 0;
+  background-color: ${({ theme }) => theme.colors.primaryContainer};
+`;
+
+const Content = styled(View)`
+  flex-direction: row;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.small};
+  padding: ${({ theme }) => theme.spacing.small};
+`;
+
+const StatusText = styled(Text)`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.onPrimaryContainer};
+  flex: 1;
+`;
+
+export const NetworkStatusIndicator: React.FC<NetworkStatusIndicatorProps> = ({ 
+  style, 
+  className 
+}) => {
   const [isConnected, setIsConnected] = useState(true);
   const [pendingActions, setPendingActions] = useState(0);
-  const [slideAnim] = useState(new Animated.Value(-100));
 
   useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener(state => {
-      const connected = state.isConnected ?? false;
-      setIsConnected(connected);
-      
-      if (connected !== isConnected) {
-        // Animate status bar appearance/disappearance
-        Animated.timing(slideAnim, {
-          toValue: connected ? -100 : 0,
-          duration: 300,
-          useNativeDriver: true,
-        }).start();
-      }
-    });
+    // Check connection status using navigator.onLine
+    const updateConnectionStatus = () => {
+      setIsConnected(navigator.onLine);
+    };
+
+    // Listen for online/offline events
+    window.addEventListener('online', updateConnectionStatus);
+    window.addEventListener('offline', updateConnectionStatus);
+    
+    // Initial check
+    updateConnectionStatus();
 
     // Update pending actions count
     const updatePendingActions = () => {
-      setPendingActions(offlineService.getOfflineActionsCount());
+      setPendingActions(offlineService?.getOfflineActionsCount() || 0);
     };
 
     const interval = setInterval(updatePendingActions, 1000);
     updatePendingActions();
 
     return () => {
-      unsubscribe();
+      window.removeEventListener('online', updateConnectionStatus);
+      window.removeEventListener('offline', updateConnectionStatus);
       clearInterval(interval);
     };
-  }, [isConnected, slideAnim]);
+  }, []);
 
-  if (isConnected && pendingActions === 0) {
+  const shouldShow = !isConnected || pendingActions > 0;
+
+  if (!shouldShow) {
     return null;
   }
 
   return (
-    <Animated.View 
-      style={[
-        styles.container,
-        { transform: [{ translateY: slideAnim }] },
-        style
-      ]}
+    <Container 
+      isVisible={shouldShow}
+      style={style}
+      className={className}
     >
-      <Surface style={styles.surface} elevation={4}>
-        <View style={styles.content}>
+      <StatusCard culturalLevel="primary">
+        <Content>
           <Icon 
             name={isConnected ? 'sync' : 'wifi-off'} 
             size={16} 
             color={isConnected ? CulturalTheme.colors.primary : CulturalTheme.colors.error} 
           />
-          <Text style={styles.text}>
+          <StatusText>
             {isConnected 
               ? `Syncing ${pendingActions} pending changes...`
               : 'You\'re offline - changes will sync when connected'
             }
-          </Text>
-        </View>
-      </Surface>
-    </Animated.View>
+          </StatusText>
+        </Content>
+      </StatusCard>
+    </Container>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-  },
-  surface: {
-    backgroundColor: CulturalTheme.colors.primaryContainer,
-    marginHorizontal: CulturalSpacing.md,
-    marginTop: CulturalSpacing.sm,
-    borderRadius: CulturalBorderRadius.sm,
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: CulturalSpacing.sm,
-    gap: CulturalSpacing.sm,
-  },
-  text: {
-    fontSize: 12,
-    color: CulturalTheme.colors.onPrimaryContainer,
-    flex: 1,
-  },
-});

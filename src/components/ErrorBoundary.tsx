@@ -1,5 +1,7 @@
 import React, { Component, ReactNode } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import styled from 'styled-components';
+import { View, Text, TouchableOpacity } from './ui';
+import { CulturalCard } from './ui/CulturalCard';
 import { CulturalTheme } from '../theme/CulturalTheme';
 
 interface Props {
@@ -13,6 +15,119 @@ interface State {
   error: Error | null;
   errorInfo: React.ErrorInfo | null;
 }
+
+// Styled Components
+const Container = styled(View)`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  background-color: ${({ theme }) => theme.colors.background};
+  padding: ${({ theme }) => theme.spacing.large};
+  min-height: 400px;
+`;
+
+const ErrorCard = styled(CulturalCard)`
+  align-items: center;
+  max-width: 350px;
+  text-align: center;
+`;
+
+const ErrorIcon = styled.div`
+  font-size: 48px;
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+`;
+
+const ErrorTitle = styled(Text)`
+  font-size: 20px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onSurface};
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const ErrorMessage = styled(Text)`
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+`;
+
+const DebugInfo = styled(View)`
+  background-color: ${({ theme }) => theme.colors.surfaceVariant};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  padding: ${({ theme }) => theme.spacing.medium};
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+  width: 100%;
+`;
+
+const DebugTitle = styled(Text)`
+  font-size: 14px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onSurface};
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const DebugText = styled(Text)`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.error};
+  font-family: monospace;
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+  word-break: break-all;
+`;
+
+const DebugStack = styled(Text)`
+  font-size: 10px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  font-family: monospace;
+  word-break: break-all;
+`;
+
+const RetryButton = styled(TouchableOpacity)`
+  background-color: ${({ theme }) => theme.colors.primary};
+  padding: ${({ theme }) => theme.spacing.medium} ${({ theme }) => theme.spacing.extraLarge};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primaryContainer};
+    transform: translateY(-1px);
+  }
+`;
+
+const RetryButtonText = styled(Text)`
+  color: ${({ theme }) => theme.colors.onPrimary};
+  font-size: 16px;
+  font-weight: 600;
+`;
+
+const MediaErrorContainer = styled(View)`
+  background-color: ${({ theme }) => theme.colors.surfaceVariant};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  padding: ${({ theme }) => theme.spacing.large};
+  align-items: center;
+  margin: ${({ theme }) => theme.spacing.medium};
+  text-align: center;
+`;
+
+const MediaErrorIcon = styled.div`
+  font-size: 32px;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const MediaErrorTitle = styled(Text)`
+  font-size: 16px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onSurface};
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const MediaErrorMessage = styled(Text)`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
@@ -39,10 +154,11 @@ export class ErrorBoundary extends Component<Props, State> {
     });
 
     // Log error securely without exposing sensitive data
+    const isDev = process.env.NODE_ENV === 'development';
     const errorReport = {
       message: error.message,
-      stack: __DEV__ ? error.stack : 'Hidden in production',
-      componentStack: __DEV__ ? errorInfo.componentStack : 'Hidden in production',
+      stack: isDev ? error.stack : 'Hidden in production',
+      componentStack: isDev ? errorInfo.componentStack : 'Hidden in production',
       timestamp: new Date().toISOString(),
     };
 
@@ -73,37 +189,38 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       // Default fallback UI
+      const isDev = process.env.NODE_ENV === 'development';
+      
       return (
-        <View style={styles.container}>
-          <View style={styles.errorCard}>
-            <Text style={styles.errorIcon}>⚠️</Text>
-            <Text style={styles.errorTitle}>Oops! Something went wrong</Text>
-            <Text style={styles.errorMessage}>
+        <Container>
+          <ErrorCard culturalLevel="primary">
+            <ErrorIcon>⚠️</ErrorIcon>
+            <ErrorTitle>Oops! Something went wrong</ErrorTitle>
+            <ErrorMessage>
               We encountered an unexpected error. Don't worry, we've been notified and are working to fix it.
-            </Text>
+            </ErrorMessage>
             
-            {__DEV__ && this.state.error && (
-              <View style={styles.debugInfo}>
-                <Text style={styles.debugTitle}>Debug Information:</Text>
-                <Text style={styles.debugText}>{this.state.error.message}</Text>
+            {isDev && this.state.error && (
+              <DebugInfo>
+                <DebugTitle>Debug Information:</DebugTitle>
+                <DebugText>{this.state.error.message}</DebugText>
                 {this.state.error.stack && (
-                  <Text style={styles.debugStack}>
+                  <DebugStack>
                     {this.state.error.stack.substring(0, 500)}...
-                  </Text>
+                  </DebugStack>
                 )}
-              </View>
+              </DebugInfo>
             )}
 
-            <TouchableOpacity 
-              style={styles.retryButton} 
+            <RetryButton 
               onPress={this.handleRetry}
               accessibilityLabel="Try again"
               accessibilityRole="button"
             >
-              <Text style={styles.retryButtonText}>Try Again</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+              <RetryButtonText>Try Again</RetryButtonText>
+            </RetryButton>
+          </ErrorCard>
+        </Container>
       );
     }
 
@@ -151,21 +268,20 @@ export class MediaErrorBoundary extends Component<Props, State> {
   render(): ReactNode {
     if (this.state.hasError) {
       return (
-        <View style={styles.mediaErrorContainer}>
-          <Text style={styles.mediaErrorIcon}>🎵</Text>
-          <Text style={styles.mediaErrorTitle}>Media Unavailable</Text>
-          <Text style={styles.mediaErrorMessage}>
+        <MediaErrorContainer>
+          <MediaErrorIcon>🎵</MediaErrorIcon>
+          <MediaErrorTitle>Media Unavailable</MediaErrorTitle>
+          <MediaErrorMessage>
             Unable to load audio or video content. Please check your connection and try again.
-          </Text>
-          <TouchableOpacity 
-            style={styles.retryButton} 
+          </MediaErrorMessage>
+          <RetryButton 
             onPress={this.handleRetry}
             accessibilityLabel="Retry loading media"
             accessibilityRole="button"
           >
-            <Text style={styles.retryButtonText}>Retry</Text>
-          </TouchableOpacity>
-        </View>
+            <RetryButtonText>Retry</RetryButtonText>
+          </RetryButton>
+        </MediaErrorContainer>
       );
     }
 
@@ -176,9 +292,10 @@ export class MediaErrorBoundary extends Component<Props, State> {
 // Hook for error handling in functional components
 export const useErrorHandler = () => {
   const handleError = React.useCallback((error: Error, errorInfo?: string) => {
+    const isDev = process.env.NODE_ENV === 'development';
     const errorReport = {
       message: error.message,
-      stack: __DEV__ ? error.stack : 'Hidden in production',
+      stack: isDev ? error.stack : 'Hidden in production',
       additionalInfo: errorInfo,
       timestamp: new Date().toISOString(),
     };
@@ -186,102 +303,9 @@ export const useErrorHandler = () => {
     console.error('Error handled:', errorReport);
 
     // In production, send to error reporting service
-    // Example: crashlytics().recordError(error);
+    // Example: Sentry.captureException(error);
   }, []);
 
   return { handleError };
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: CulturalTheme.colors.background,
-    padding: CulturalTheme.spacing.large,
-  },
-  errorCard: {
-    backgroundColor: CulturalTheme.colors.surface,
-    borderRadius: CulturalTheme.borderRadius.medium,
-    padding: CulturalTheme.spacing.extraLarge,
-    alignItems: 'center',
-    maxWidth: 350,
-    ...CulturalTheme.elevation.medium,
-  },
-  errorIcon: {
-    fontSize: 48,
-    marginBottom: CulturalTheme.spacing.large,
-  },
-  errorTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: CulturalTheme.colors.textPrimary,
-    textAlign: 'center',
-    marginBottom: CulturalTheme.spacing.medium,
-  },
-  errorMessage: {
-    fontSize: 16,
-    color: CulturalTheme.colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: CulturalTheme.spacing.large,
-  },
-  debugInfo: {
-    backgroundColor: CulturalTheme.colors.backgroundSecondary,
-    borderRadius: CulturalTheme.borderRadius.small,
-    padding: CulturalTheme.spacing.medium,
-    marginBottom: CulturalTheme.spacing.large,
-    width: '100%',
-  },
-  debugTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: CulturalTheme.colors.textPrimary,
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  debugText: {
-    fontSize: 12,
-    color: CulturalTheme.colors.error,
-    fontFamily: 'monospace',
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  debugStack: {
-    fontSize: 10,
-    color: CulturalTheme.colors.textSecondary,
-    fontFamily: 'monospace',
-  },
-  retryButton: {
-    backgroundColor: CulturalTheme.colors.primary,
-    paddingHorizontal: CulturalTheme.spacing.extraLarge,
-    paddingVertical: CulturalTheme.spacing.medium,
-    borderRadius: CulturalTheme.borderRadius.small,
-  },
-  retryButtonText: {
-    color: CulturalTheme.colors.surface,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  mediaErrorContainer: {
-    backgroundColor: CulturalTheme.colors.backgroundSecondary,
-    borderRadius: CulturalTheme.borderRadius.medium,
-    padding: CulturalTheme.spacing.large,
-    alignItems: 'center',
-    margin: CulturalTheme.spacing.medium,
-  },
-  mediaErrorIcon: {
-    fontSize: 32,
-    marginBottom: CulturalTheme.spacing.medium,
-  },
-  mediaErrorTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: CulturalTheme.colors.textPrimary,
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  mediaErrorMessage: {
-    fontSize: 14,
-    color: CulturalTheme.colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: CulturalTheme.spacing.medium,
-  },
-});

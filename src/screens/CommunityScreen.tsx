@@ -1,17 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  RefreshControl,
-  TouchableOpacity,
-} from 'react-native';
-import { Surface, Button, Searchbar, Chip, FAB } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import styled from 'styled-components';
 import { useQuery } from 'react-query';
-
-import { CulturalTheme, CulturalSpacing, CulturalBorderRadius } from '../theme/CulturalTheme';
+import { View, Text, ScrollView, TouchableOpacity, SafeAreaView } from '../components/ui';
+import { CulturalCard } from '../components/ui/CulturalCard';
+import { CulturalTheme } from '../theme/CulturalTheme';
 import { useAuthStore } from '../stores/authStore';
 
 interface CommunityPost {
@@ -39,6 +31,310 @@ interface CommunityStats {
   newcomerWelcomeRate: number;
 }
 
+// Styled Components
+const Container = styled(View)`
+  flex: 1;
+  background-color: ${({ theme }) => theme.colors.background};
+`;
+
+const WelcomeHeader = styled(CulturalCard)`
+  margin: ${({ theme }) => theme.spacing.medium};
+`;
+
+const WelcomeTitle = styled(Text)`
+  font-size: 20px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.onSurface};
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
+  text-align: center;
+`;
+
+const WelcomeSubtitle = styled(Text)`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const StatsContainer = styled(View)`
+  flex-direction: row;
+  justify-content: space-around;
+`;
+
+const StatItem = styled(View)`
+  align-items: center;
+`;
+
+const StatValue = styled(Text)`
+  font-size: 18px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+const StatLabel = styled(Text)`
+  font-size: 10px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  text-align: center;
+  margin-top: ${({ theme }) => theme.spacing.xs};
+`;
+
+const FiltersContainer = styled(View)`
+  background-color: ${({ theme }) => theme.colors.surface};
+  padding: ${({ theme }) => theme.spacing.medium};
+`;
+
+const SearchInput = styled.input`
+  width: 100%;
+  padding: ${({ theme }) => theme.spacing.medium};
+  border: 1px solid ${({ theme }) => theme.colors.outline};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  background-color: ${({ theme }) => theme.colors.surfaceVariant};
+  color: ${({ theme }) => theme.colors.onSurface};
+  font-size: 16px;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+  
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  }
+  
+  &:focus {
+    outline: 2px solid ${({ theme }) => theme.colors.primary};
+    outline-offset: 2px;
+  }
+`;
+
+const CategoryScroll = styled(ScrollView)`
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+  flex-direction: row;
+`;
+
+const CategoryContainer = styled(View)`
+  flex-direction: row;
+  gap: ${({ theme }) => theme.spacing.small};
+  padding-right: ${({ theme }) => theme.spacing.medium};
+`;
+
+const CategoryChip = styled(TouchableOpacity)<{ selected?: boolean }>`
+  padding: ${({ theme }) => theme.spacing.small} ${({ theme }) => theme.spacing.medium};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  background-color: ${({ selected, theme }) => 
+    selected ? theme.colors.primary : theme.colors.surfaceVariant};
+  margin-right: ${({ theme }) => theme.spacing.small};
+  flex-direction: row;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+`;
+
+const CategoryChipText = styled(Text)<{ selected?: boolean }>`
+  color: ${({ selected, theme }) => 
+    selected ? theme.colors.onPrimary : theme.colors.onSurface};
+  font-size: 14px;
+  font-weight: 500;
+`;
+
+const SortContainer = styled(View)`
+  flex-direction: row;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.small};
+`;
+
+const SortLabel = styled(Text)`
+  font-size: 14px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.onSurface};
+`;
+
+const SortButton = styled(TouchableOpacity)<{ active?: boolean }>`
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.small};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  background-color: ${({ active, theme }) => 
+    active ? theme.colors.secondary : theme.colors.surfaceVariant};
+`;
+
+const SortButtonText = styled(Text)<{ active?: boolean }>`
+  font-size: 12px;
+  color: ${({ active, theme }) => 
+    active ? theme.colors.onSecondary : theme.colors.onSurface};
+  font-weight: ${({ active }) => active ? '600' : '400'};
+`;
+
+const DiscussionsList = styled(ScrollView)`
+  flex: 1;
+`;
+
+const PostCard = styled(CulturalCard)`
+  margin: 0 ${({ theme }) => theme.spacing.medium} ${({ theme }) => theme.spacing.small};
+  cursor: pointer;
+`;
+
+const PostHeader = styled(View)`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const PostMeta = styled(View)`
+  flex-direction: row;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+`;
+
+const CategoryIcon = styled.span`
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+const CategoryText = styled(Text)`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight: 500;
+`;
+
+const VerifiedIcon = styled.span`
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.tertiary};
+`;
+
+const TimeAgo = styled(Text)`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+`;
+
+const PostTitle = styled(Text)`
+  font-size: 16px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onSurface};
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+`;
+
+const PostPreview = styled(Text)`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  line-height: 1.4;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+`;
+
+const PostFooter = styled(View)`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const AuthorInfo = styled(View)`
+  flex-direction: row;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+`;
+
+const AuthorName = styled(Text)`
+  font-size: 12px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.onSurface};
+`;
+
+const AuthorLevel = styled(Text)`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+`;
+
+const PostStats = styled(View)`
+  flex-direction: row;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.medium};
+`;
+
+const StatGroup = styled(View)`
+  flex-direction: row;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.xs};
+`;
+
+const StatIcon = styled.span`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.outline};
+`;
+
+const StatText = styled(Text)`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+`;
+
+const ExpertBadge = styled(View)`
+  flex-direction: row;
+  align-items: center;
+  background-color: ${({ theme }) => theme.colors.tertiary};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  padding: 2px ${({ theme }) => theme.spacing.xs};
+  gap: 2px;
+`;
+
+const ExpertIcon = styled.span`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.onTertiary};
+`;
+
+const ExpertText = styled(Text)`
+  font-size: 10px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onTertiary};
+`;
+
+const EmptyState = styled(View)`
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => theme.spacing.xxl} 0;
+`;
+
+const EmptyStateIcon = styled.div`
+  font-size: 48px;
+  color: ${({ theme }) => theme.colors.outline};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const EmptyStateText = styled(Text)`
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  text-align: center;
+  padding: 0 ${({ theme }) => theme.spacing.xl};
+`;
+
+const FAB = styled(TouchableOpacity)`
+  position: fixed;
+  bottom: ${({ theme }) => theme.spacing.medium};
+  right: ${({ theme }) => theme.spacing.medium};
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.colors.secondary};
+  color: ${({ theme }) => theme.colors.onSecondary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: ${({ theme }) => theme.elevation.high.boxShadow};
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: ${({ theme }) => theme.elevation.high.boxShadow};
+  }
+`;
+
+const FABIcon = styled.span`
+  font-size: 24px;
+  color: ${({ theme }) => theme.colors.onSecondary};
+`;
+
 const CommunityScreen: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -48,11 +344,11 @@ const CommunityScreen: React.FC = () => {
   const { user } = useAuthStore();
 
   const categories = [
-    { key: 'all', label: 'All Discussions', icon: 'forum' },
-    { key: 'learning_journey', label: 'Learning Journey', icon: 'school' },
-    { key: 'cultural_questions', label: 'Cultural Questions', icon: 'help' },
-    { key: 'dance_techniques', label: 'Dance Techniques', icon: 'fitness-center' },
-    { key: 'community_events', label: 'Community Events', icon: 'event' },
+    { key: 'all', label: 'All Discussions', icon: '💬' },
+    { key: 'learning_journey', label: 'Learning Journey', icon: '🎓' },
+    { key: 'cultural_questions', label: 'Cultural Questions', icon: '❓' },
+    { key: 'dance_techniques', label: 'Dance Techniques', icon: '💃' },
+    { key: 'community_events', label: 'Community Events', icon: '📅' },
   ];
 
   const { data: discussions, isLoading, refetch } = useQuery(
@@ -97,7 +393,7 @@ const CommunityScreen: React.FC = () => {
 
   const getCategoryIcon = (category: string) => {
     const cat = categories.find(c => c.key === category);
-    return cat?.icon || 'forum';
+    return cat?.icon || '💬';
   };
 
   const formatTimeAgo = (dateString: string) => {
@@ -113,427 +409,169 @@ const CommunityScreen: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Community Welcome Header */}
-      <Surface style={styles.welcomeHeader} elevation={2}>
-        <View style={styles.welcomeContent}>
-          <Text style={styles.welcomeTitle}>Fáilte to our Community!</Text>
-          <Text style={styles.welcomeSubtitle}>
+    <Container>
+      <SafeAreaView>
+        {/* Community Welcome Header */}
+        <WelcomeHeader culturalLevel="primary">
+          <WelcomeTitle>Fáilte to our Community!</WelcomeTitle>
+          <WelcomeSubtitle>
             A place where everyone learns and everyone teaches
-          </Text>
+          </WelcomeSubtitle>
           
           {communityStats && (
-            <View style={styles.statsContainer}>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>
+            <StatsContainer>
+              <StatItem>
+                <StatValue>
                   {Math.round(communityStats.positiveInteractionRate * 100)}%
-                </Text>
-                <Text style={styles.statLabel}>Positive Interactions</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>
+                </StatValue>
+                <StatLabel>Positive Interactions</StatLabel>
+              </StatItem>
+              <StatItem>
+                <StatValue>
                   {Math.round(communityStats.expertResponseRate * 100)}%
-                </Text>
-                <Text style={styles.statLabel}>Expert Responses</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>
+                </StatValue>
+                <StatLabel>Expert Responses</StatLabel>
+              </StatItem>
+              <StatItem>
+                <StatValue>
                   {Math.round(communityStats.newcomerWelcomeRate * 100)}%
-                </Text>
-                <Text style={styles.statLabel}>Newcomer Welcome</Text>
-              </View>
-            </View>
+                </StatValue>
+                <StatLabel>Newcomer Welcome</StatLabel>
+              </StatItem>
+            </StatsContainer>
           )}
-        </View>
-      </Surface>
+        </WelcomeHeader>
 
-      {/* Search and Filters */}
-      <View style={styles.filtersContainer}>
-        <Searchbar
-          placeholder="Search discussions..."
-          onChangeText={setSearchQuery}
-          value={searchQuery}
-          style={styles.searchBar}
-          iconColor={CulturalTheme.colors.primary}
-        />
-        
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoryScroll}
-          contentContainerStyle={styles.categoryContainer}
+        {/* Search and Filters */}
+        <FiltersContainer>
+          <SearchInput
+            placeholder="Search discussions..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          
+          <CategoryScroll horizontal>
+            <CategoryContainer>
+              {categories.map((category) => (
+                <CategoryChip
+                  key={category.key}
+                  selected={selectedCategory === category.key}
+                  onPress={() => setSelectedCategory(category.key)}
+                >
+                  <CategoryIcon>{category.icon}</CategoryIcon>
+                  <CategoryChipText selected={selectedCategory === category.key}>
+                    {category.label}
+                  </CategoryChipText>
+                </CategoryChip>
+              ))}
+            </CategoryContainer>
+          </CategoryScroll>
+
+          <SortContainer>
+            <SortLabel>Sort by:</SortLabel>
+            {(['recent', 'popular', 'expert_verified'] as const).map((sort) => (
+              <SortButton
+                key={sort}
+                active={sortBy === sort}
+                onPress={() => setSortBy(sort)}
+              >
+                <SortButtonText active={sortBy === sort}>
+                  {sort === 'recent' ? 'Recent' : sort === 'popular' ? 'Popular' : 'Expert Verified'}
+                </SortButtonText>
+              </SortButton>
+            ))}
+          </SortContainer>
+        </FiltersContainer>
+
+        {/* Discussions List */}
+        <DiscussionsList>
+          {discussions?.discussions?.map((post: CommunityPost) => (
+            <CommunityPostCard key={post.id} post={post} />
+          ))}
+          
+          {(!discussions?.discussions || discussions.discussions.length === 0) && (
+            <EmptyState>
+              <EmptyStateIcon>💬</EmptyStateIcon>
+              <EmptyStateText>
+                No discussions found. Be the first to start a conversation!
+              </EmptyStateText>
+            </EmptyState>
+          )}
+        </DiscussionsList>
+
+        {/* Floating Action Button */}
+        <FAB
+          onPress={() => {
+            // TODO: Navigate to create post screen
+            console.log('Create new post');
+          }}
+          accessibilityLabel="Ask Question"
+          accessibilityRole="button"
         >
-          {categories.map((category) => (
-            <Chip
-              key={category.key}
-              selected={selectedCategory === category.key}
-              onPress={() => setSelectedCategory(category.key)}
-              icon={category.icon}
-              style={[
-                styles.categoryChip,
-                selectedCategory === category.key && styles.selectedCategoryChip
-              ]}
-              textStyle={[
-                styles.categoryChipText,
-                selectedCategory === category.key && styles.selectedCategoryChipText
-              ]}
-            >
-              {category.label}
-            </Chip>
-          ))}
-        </ScrollView>
-
-        <View style={styles.sortContainer}>
-          <Text style={styles.sortLabel}>Sort by:</Text>
-          {['recent', 'popular', 'expert_verified'].map((sort) => (
-            <TouchableOpacity
-              key={sort}
-              style={[
-                styles.sortButton,
-                sortBy === sort && styles.activeSortButton
-              ]}
-              onPress={() => setSortBy(sort as any)}
-            >
-              <Text style={[
-                styles.sortButtonText,
-                sortBy === sort && styles.activeSortButtonText
-              ]}>
-                {sort === 'recent' ? 'Recent' : sort === 'popular' ? 'Popular' : 'Expert Verified'}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
-
-      {/* Discussions List */}
-      <ScrollView
-        style={styles.discussionsList}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {discussions?.discussions?.map((post: CommunityPost) => (
-          <CommunityPostCard key={post.id} post={post} />
-        ))}
-        
-        {(!discussions?.discussions || discussions.discussions.length === 0) && (
-          <View style={styles.emptyState}>
-            <Icon name="forum" size={48} color={CulturalTheme.colors.outline} />
-            <Text style={styles.emptyStateText}>
-              No discussions found. Be the first to start a conversation!
-            </Text>
-          </View>
-        )}
-      </ScrollView>
-
-      {/* Floating Action Button */}
-      <FAB
-        style={styles.fab}
-        icon="add"
-        label="Ask Question"
-        onPress={() => {
-          // TODO: Navigate to create post screen
-          console.log('Create new post');
-        }}
-      />
-    </View>
+          <FABIcon>➕</FABIcon>
+        </FAB>
+      </SafeAreaView>
+    </Container>
   );
 };
 
 const CommunityPostCard: React.FC<{ post: CommunityPost }> = ({ post }) => {
   return (
-    <TouchableOpacity
-      style={styles.postCard}
+    <PostCard
+      culturalLevel="primary"
       onPress={() => {
         // TODO: Navigate to post details
         console.log('Navigate to post:', post.id);
       }}
     >
-      <Surface style={styles.postSurface} elevation={1}>
-        <View style={styles.postHeader}>
-          <View style={styles.postMeta}>
-            <Icon 
-              name={getCategoryIcon(post.category)} 
-              size={16} 
-              color={CulturalTheme.colors.primary}
-            />
-            <Text style={styles.categoryText}>
-              {post.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Text>
-            {post.culturalExpertVerified && (
-              <Icon name="verified" size={16} color={CulturalTheme.colors.tertiary} />
-            )}
-          </View>
-          <Text style={styles.timeAgo}>{formatTimeAgo(post.createdAt)}</Text>
-        </View>
+      <PostHeader>
+        <PostMeta>
+          <CategoryIcon>{getCategoryIcon(post.category)}</CategoryIcon>
+          <CategoryText>
+            {post.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+          </CategoryText>
+          {post.culturalExpertVerified && (
+            <VerifiedIcon>✅</VerifiedIcon>
+          )}
+        </PostMeta>
+        <TimeAgo>{formatTimeAgo(post.createdAt)}</TimeAgo>
+      </PostHeader>
 
-        <Text style={styles.postTitle} numberOfLines={2}>
-          {post.title}
-        </Text>
-        
-        <Text style={styles.postPreview} numberOfLines={3}>
-          {post.preview}
-        </Text>
+      <PostTitle>
+        {post.title}
+      </PostTitle>
+      
+      <PostPreview>
+        {post.preview}
+      </PostPreview>
 
-        <View style={styles.postFooter}>
-          <View style={styles.authorInfo}>
-            <Text style={styles.authorName}>{post.author.name}</Text>
-            <Text style={styles.authorLevel}>({post.author.culturalLevel})</Text>
-          </View>
+      <PostFooter>
+        <AuthorInfo>
+          <AuthorName>{post.author.name}</AuthorName>
+          <AuthorLevel>({post.author.culturalLevel})</AuthorLevel>
+        </AuthorInfo>
 
-          <View style={styles.postStats}>
-            <View style={styles.statGroup}>
-              <Icon name="forum" size={14} color={CulturalTheme.colors.outline} />
-              <Text style={styles.statText}>{post.responsesCount}</Text>
-            </View>
-            
-            <View style={styles.statGroup}>
-              <Icon name="thumb-up" size={14} color={CulturalTheme.colors.outline} />
-              <Text style={styles.statText}>{post.helpfulCount}</Text>
-            </View>
+        <PostStats>
+          <StatGroup>
+            <StatIcon>💬</StatIcon>
+            <StatText>{post.responsesCount}</StatText>
+          </StatGroup>
+          
+          <StatGroup>
+            <StatIcon>👍</StatIcon>
+            <StatText>{post.helpfulCount}</StatText>
+          </StatGroup>
 
-            {post.expertResponded && (
-              <View style={styles.expertBadge}>
-                <Icon name="school" size={12} color={CulturalTheme.colors.onTertiary} />
-                <Text style={styles.expertText}>Expert</Text>
-              </View>
-            )}
-          </View>
-        </View>
-      </Surface>
-    </TouchableOpacity>
+          {post.expertResponded && (
+            <ExpertBadge>
+              <ExpertIcon>🎓</ExpertIcon>
+              <ExpertText>Expert</ExpertText>
+            </ExpertBadge>
+          )}
+        </PostStats>
+      </PostFooter>
+    </PostCard>
   );
 };
 
-function getCategoryIcon(category: string): string {
-  switch (category) {
-    case 'learning_journey': return 'school';
-    case 'cultural_questions': return 'help';
-    case 'dance_techniques': return 'fitness-center';
-    case 'community_events': return 'event';
-    default: return 'forum';
-  }
-}
-
-function formatTimeAgo(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-  
-  if (diffInHours < 1) return 'Just now';
-  if (diffInHours < 24) return `${diffInHours}h ago`;
-  const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays < 7) return `${diffInDays}d ago`;
-  return date.toLocaleDateString();
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: CulturalTheme.colors.background,
-  },
-  welcomeHeader: {
-    backgroundColor: CulturalTheme.colors.primaryContainer,
-    margin: CulturalSpacing.md,
-    borderRadius: CulturalBorderRadius.lg,
-  },
-  welcomeContent: {
-    padding: CulturalSpacing.lg,
-  },
-  welcomeTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: CulturalTheme.colors.onPrimaryContainer,
-    marginBottom: CulturalSpacing.xs,
-  },
-  welcomeSubtitle: {
-    fontSize: 14,
-    color: CulturalTheme.colors.onPrimaryContainer,
-    opacity: 0.8,
-    marginBottom: CulturalSpacing.md,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: CulturalTheme.colors.onPrimaryContainer,
-  },
-  statLabel: {
-    fontSize: 10,
-    color: CulturalTheme.colors.onPrimaryContainer,
-    opacity: 0.7,
-    textAlign: 'center',
-    marginTop: CulturalSpacing.xs,
-  },
-  filtersContainer: {
-    backgroundColor: CulturalTheme.colors.surface,
-    padding: CulturalSpacing.md,
-  },
-  searchBar: {
-    backgroundColor: CulturalTheme.colors.surfaceVariant,
-    marginBottom: CulturalSpacing.md,
-  },
-  categoryScroll: {
-    marginBottom: CulturalSpacing.md,
-  },
-  categoryContainer: {
-    paddingRight: CulturalSpacing.md,
-  },
-  categoryChip: {
-    marginRight: CulturalSpacing.sm,
-    backgroundColor: CulturalTheme.colors.surfaceVariant,
-  },
-  selectedCategoryChip: {
-    backgroundColor: CulturalTheme.colors.primary,
-  },
-  categoryChipText: {
-    color: CulturalTheme.colors.onSurface,
-  },
-  selectedCategoryChipText: {
-    color: CulturalTheme.colors.onPrimary,
-  },
-  sortContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: CulturalSpacing.sm,
-  },
-  sortLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: CulturalTheme.colors.onSurface,
-  },
-  sortButton: {
-    paddingHorizontal: CulturalSpacing.sm,
-    paddingVertical: CulturalSpacing.xs,
-    borderRadius: CulturalBorderRadius.sm,
-    backgroundColor: CulturalTheme.colors.surfaceVariant,
-  },
-  activeSortButton: {
-    backgroundColor: CulturalTheme.colors.secondary,
-  },
-  sortButtonText: {
-    fontSize: 12,
-    color: CulturalTheme.colors.onSurface,
-  },
-  activeSortButtonText: {
-    color: CulturalTheme.colors.onSecondary,
-    fontWeight: '600',
-  },
-  discussionsList: {
-    flex: 1,
-  },
-  postCard: {
-    marginHorizontal: CulturalSpacing.md,
-    marginBottom: CulturalSpacing.sm,
-  },
-  postSurface: {
-    backgroundColor: CulturalTheme.colors.surface,
-    borderRadius: CulturalBorderRadius.md,
-    padding: CulturalSpacing.md,
-  },
-  postHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: CulturalSpacing.sm,
-  },
-  postMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: CulturalSpacing.xs,
-  },
-  categoryText: {
-    fontSize: 12,
-    color: CulturalTheme.colors.primary,
-    fontWeight: '500',
-  },
-  timeAgo: {
-    fontSize: 12,
-    color: CulturalTheme.colors.onSurfaceVariant,
-  },
-  postTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: CulturalTheme.colors.onSurface,
-    marginBottom: CulturalSpacing.sm,
-    lineHeight: 22,
-  },
-  postPreview: {
-    fontSize: 14,
-    color: CulturalTheme.colors.onSurfaceVariant,
-    lineHeight: 20,
-    marginBottom: CulturalSpacing.md,
-  },
-  postFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  authorInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: CulturalSpacing.xs,
-  },
-  authorName: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: CulturalTheme.colors.onSurface,
-  },
-  authorLevel: {
-    fontSize: 12,
-    color: CulturalTheme.colors.onSurfaceVariant,
-  },
-  postStats: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: CulturalSpacing.md,
-  },
-  statGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: CulturalSpacing.xs,
-  },
-  statText: {
-    fontSize: 12,
-    color: CulturalTheme.colors.onSurfaceVariant,
-  },
-  expertBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: CulturalTheme.colors.tertiary,
-    borderRadius: CulturalBorderRadius.sm,
-    paddingHorizontal: CulturalSpacing.xs,
-    paddingVertical: 2,
-    gap: 2,
-  },
-  expertText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: CulturalTheme.colors.onTertiary,
-  },
-  emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: CulturalSpacing.xxl,
-  },
-  emptyStateText: {
-    fontSize: 16,
-    color: CulturalTheme.colors.onSurfaceVariant,
-    textAlign: 'center',
-    marginTop: CulturalSpacing.md,
-    paddingHorizontal: CulturalSpacing.xl,
-  },
-  fab: {
-    position: 'absolute',
-    margin: CulturalSpacing.md,
-    right: 0,
-    bottom: 0,
-    backgroundColor: CulturalTheme.colors.secondary,
-  },
-});
+export { CommunityScreen };

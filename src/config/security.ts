@@ -3,7 +3,7 @@
  * Implements comprehensive security measures
  */
 
-import { Platform } from 'react-native';
+import { Platform } from '../utils/platform';
 
 // Security Headers for API requests
 export const SECURITY_HEADERS = {
@@ -109,6 +109,15 @@ export const SECURITY_MONITORING = {
 
 // Platform-specific security settings
 export const PLATFORM_SECURITY = {
+  web: {
+    enableSessionStorage: true,
+    enableLocalStorage: true,
+    enableSecureCookies: true,
+    enableCSP: true,
+    enableHSTS: true,
+    preventClickjacking: true,
+    enableXSSProtection: true,
+  },
   ios: {
     enableKeychain: true,
     enableTouchID: true,
@@ -122,6 +131,17 @@ export const PLATFORM_SECURITY = {
     enableAppSigning: true,
     preventRootedDevices: false, // Set to true for high-security apps
     enableNetworkSecurityConfig: true,
+  },
+  windows: {
+    enableWindowsHello: true,
+    enableDataProtectionAPI: true,
+  },
+  macos: {
+    enableKeychain: true,
+    enableTouchID: true,
+  },
+  linux: {
+    enableSystemKeyring: true,
   },
 } as const;
 

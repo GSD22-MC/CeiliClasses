@@ -15,28 +15,31 @@
     "deploy:production": "./scripts/deploy-production.sh"
   },
   "dependencies": {
+    "@types/three": "^0.178.1",
+    "framer-motion": "^10.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-scripts": "5.0.1",
-    "react-router-dom": "^6.8.1",
-    "styled-components": "^5.3.6",
     "react-query": "^3.39.3",
-    "zustand": "^4.3.2",
+    "react-router-dom": "^6.8.1",
+    "react-scripts": "5.0.1",
     "react-spring": "^9.6.1",
-    "framer-motion": "^10.0.1"
+    "react-youtube": "^10.1.0",
+    "styled-components": "^5.3.6",
+    "three": "^0.178.0",
+    "zustand": "^4.3.2"
   },
   "devDependencies": {
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
     "@types/styled-components": "^5.1.26",
-    "typescript": "^4.9.4",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
     "@typescript-eslint/parser": "^5.50.0",
+    "@vitejs/plugin-react": "^4.0.0",
     "eslint": "^8.33.0",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "vite": "^5.0.0",
-    "@vitejs/plugin-react": "^4.0.0"
+    "typescript": "^4.9.4",
+    "vite": "^5.0.0"
   },
   "browserslist": {
     "production": [

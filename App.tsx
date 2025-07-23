@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Icon } from './src/components/ui';
 
 import { analyticsService } from './src/services/AnalyticsService';
 import { usabilityTestingService } from './src/services/UsabilityTestingService';
@@ -162,10 +162,10 @@ const App: React.FC = () => {
             />
           </Tab.Navigator>
             </NavigationContainer>
-          </SafeAreaView>
-        </PaperProvider>
-      </QueryClientProvider>
-    </SafeAreaProvider>
+            </SafeAreaView>
+          </PaperProvider>
+        </QueryClientProvider>
+      </SafeAreaProvider>
     </ErrorBoundary>
   );
 };

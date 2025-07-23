@@ -1,96 +1,141 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
+import { View, Text, Icon } from './ui';
 
-const NavContainer = styled.nav`
+// Styled Components
+const NavigationContainer = styled.nav`
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: 80px;
-  background-color: ${props => props.theme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.outline};
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+  justify-content: center;
+  z-index: 100;
+  box-shadow: ${({ theme }) => theme.elevation.low.boxShadow};
 `;
 
-const Logo = styled.div`
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: ${props => props.theme.colors.onPrimary};
-`;
-
-const NavLinks = styled.div`
+const NavList = styled.ul`
   display: flex;
-  gap: 2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: ${({ theme }) => theme.spacing.large};
   
   @media (max-width: 768px) {
-    gap: 1rem;
+    gap: ${({ theme }) => theme.spacing.medium};
   }
 `;
 
-const NavLink = styled(Link)<{ $active: boolean }>`
-  color: ${props => props.$active ? props.theme.colors.secondary : props.theme.colors.onPrimary};
-  font-weight: ${props => props.$active ? '600' : '500'};
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+const NavItem = styled.li`
+  display: flex;
+`;
+
+const NavLinkStyled = styled(NavLink)`
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 0.9rem;
-
+  padding: ${({ theme }) => theme.spacing.small};
+  text-decoration: none;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  transition: all 0.2s ease;
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  min-width: 60px;
+  
   &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: ${props => props.theme.colors.secondary};
+    background-color: ${({ theme }) => theme.colors.surfaceVariant};
+    color: ${({ theme }) => theme.colors.onSurface};
   }
-
-  @media (max-width: 768px) {
-    font-size: 0.8rem;
-    padding: 0.25rem 0.5rem;
+  
+  &.active {
+    color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme }) => theme.colors.primaryContainer};
   }
 `;
 
-const NavIcon = styled.span`
-  font-size: 1.2rem;
-  margin-bottom: 0.25rem;
+const NavIcon = styled(View)`
+  margin-bottom: ${({ theme }) => theme.spacing.xs};
 `;
 
-const Navigation: React.FC = () => {
-  const location = useLocation();
+const NavLabel = styled(Text)`
+  font-size: 10px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+  
+  @media (max-width: 480px) {
+    font-size: 8px;
+  }
+`;
 
-  const navItems = [
-    { path: '/', label: 'Fáilte', sublabel: 'Welcome', icon: '🏠' },
-    { path: '/learn', label: 'Foghlaim', sublabel: 'Learn', icon: '📚' },
-    { path: '/practice', label: 'Cleachtadh', sublabel: 'Practice', icon: '💃' },
-    { path: '/community', label: 'Comhphobal', sublabel: 'Community', icon: '👥' },
-    { path: '/heritage', label: 'Oidhreacht', sublabel: 'Heritage', icon: '🏛️' },
-  ];
+interface NavItem {
+  path: string;
+  icon: string;
+  label: string;
+  irishLabel: string;
+}
 
+const navItems: NavItem[] = [
+  {
+    path: '/',
+    icon: 'home',
+    label: 'Welcome',
+    irishLabel: 'Fáilte'
+  },
+  {
+    path: '/learn',
+    icon: 'school',
+    label: 'Learn',
+    irishLabel: 'Foghlaim'
+  },
+  {
+    path: '/practice',
+    icon: 'fitness-center',
+    label: 'Practice',
+    irishLabel: 'Cleachtadh'
+  },
+  {
+    path: '/community',
+    icon: 'groups',
+    label: 'Community',
+    irishLabel: 'Comhphobal'
+  },
+  {
+    path: '/heritage',
+    icon: 'menu-book',
+    label: 'Heritage',
+    irishLabel: 'Oidhreacht'
+  }
+];
+
+export const Navigation: React.FC = () => {
   return (
-    <NavContainer>
-      <Logo>CeiliClasses</Logo>
-      <NavLinks>
+    <NavigationContainer>
+      <NavList>
         {navItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            $active={location.pathname === item.path}
-          >
-            <NavIcon>{item.icon}</NavIcon>
-            <div>
-              <div>{item.label}</div>
-              <div style={{ fontSize: '0.7rem', opacity: 0.8 }}>({item.sublabel})</div>
-            </div>
-          </NavLink>
+          <NavItem key={item.path}>
+            <NavLinkStyled 
+              to={item.path}
+              className={({ isActive }) => isActive ? 'active' : ''}
+            >
+              <NavIcon>
+                <Icon name={item.icon} size={24} />
+              </NavIcon>
+              <NavLabel>
+                {item.irishLabel}
+                <br />
+                <span style={{ fontSize: '8px', opacity: 0.8 }}>
+                  ({item.label})
+                </span>
+              </NavLabel>
+            </NavLinkStyled>
+          </NavItem>
         ))}
-      </NavLinks>
-    </NavContainer>
+      </NavList>
+    </NavigationContainer>
   );
 };
-
-export default Navigation;

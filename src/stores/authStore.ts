@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AsyncStorage } from '../utils/webStorage';
 import { secureApiCall } from '../config/api';
 import { SecureStorageService } from '../services/SecureStorageService';
 
@@ -188,7 +188,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         });
       }
     } catch (error) {
-      console.error(__DEV__ && 'Failed to load auth state:', error);
+      console.error('Failed to load auth state:', error);
       // Clear potentially corrupted data
       await SecureStorageService.clearAll();
       await AsyncStorage.removeItem('user');

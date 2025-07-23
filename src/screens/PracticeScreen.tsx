@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import styled from 'styled-components';
+import { View, Text, ScrollView, TouchableOpacity, SafeAreaView } from '../components/ui';
+import { CulturalCard } from '../components/ui/CulturalCard';
 import { CulturalTheme } from '../theme/CulturalTheme';
 import { PronunciationPractice } from '../components/PronunciationPractice';
 
@@ -76,66 +71,225 @@ const irishTerms = [
   },
 ];
 
+// Styled Components
+const Container = styled(View)`
+  flex: 1;
+  background-color: ${({ theme }) => theme.colors.background};
+`;
+
+const Content = styled(ScrollView)`
+  flex: 1;
+  padding: 0 ${({ theme }) => theme.spacing.medium};
+`;
+
+const HeaderSection = styled(View)`
+  padding: ${({ theme }) => theme.spacing.large} 0;
+  align-items: center;
+`;
+
+const ScreenTitle = styled(Text)`
+  font-size: 28px;
+  font-weight: bold;
+  color: ${({ theme }) => theme.colors.primary};
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const ScreenSubtitle = styled(Text)`
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  text-align: center;
+`;
+
+const ModesGrid = styled(View)`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${({ theme }) => theme.spacing.medium};
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const ModeCard = styled(CulturalCard)`
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+`;
+
+const ModeIcon = styled(Text)`
+  font-size: 40px;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+  text-align: center;
+`;
+
+const ModeTitle = styled(Text)`
+  font-size: 16px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onSurface};
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+`;
+
+const ModeDescription = styled(Text)`
+  font-size: 12px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  text-align: center;
+  line-height: 1.3;
+`;
+
+const StatsSection = styled(CulturalCard)`
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+`;
+
+const SectionTitle = styled(Text)`
+  font-size: 18px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onSurface};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+  text-align: center;
+`;
+
+const StatsGrid = styled(View)`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: ${({ theme }) => theme.spacing.medium};
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const StatCard = styled(View)`
+  align-items: center;
+`;
+
+const StatValue = styled(Text)`
+  font-size: 24px;
+  font-weight: bold;
+  color: ${({ theme }) => theme.colors.primary};
+`;
+
+const StatLabel = styled(Text)`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  margin-top: ${({ theme }) => theme.spacing.small};
+  text-align: center;
+`;
+
+const PracticeContainer = styled(View)`
+  flex: 1;
+`;
+
+const PracticeHeader = styled(View)`
+  flex-direction: row;
+  align-items: center;
+  padding: ${({ theme }) => theme.spacing.medium};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.outline};
+`;
+
+const BackButton = styled(TouchableOpacity)`
+  margin-right: ${({ theme }) => theme.spacing.medium};
+`;
+
+const BackButtonText = styled(Text)`
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight: 600;
+`;
+
+const PracticeTitle = styled(Text)`
+  font-size: 18px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onSurface};
+`;
+
+const ComingSoonCard = styled(CulturalCard)`
+  margin-top: ${({ theme }) => theme.spacing.xl};
+  align-items: center;
+  text-align: center;
+`;
+
+const ComingSoonIcon = styled(Text)`
+  font-size: 48px;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const ComingSoonTitle = styled(Text)`
+  font-size: 20px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.onSurface};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const ComingSoonDescription = styled(Text)`
+  font-size: 16px;
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
+  text-align: center;
+  line-height: 1.5;
+`;
+
 export const PracticeScreen: React.FC = () => {
   const [selectedMode, setSelectedMode] = useState<PracticeMode | null>(null);
-  const [currentTermIndex, setCurrentTermIndex] = useState(0);
 
   const renderModeSelection = () => (
-    <ScrollView style={styles.content}>
-      <View style={styles.headerSection}>
-        <Text style={styles.screenTitle}>Cleachtadh (Practice)</Text>
-        <Text style={styles.screenSubtitle}>
+    <Content>
+      <HeaderSection>
+        <ScreenTitle>Cleachtadh (Practice)</ScreenTitle>
+        <ScreenSubtitle>
           Improve your skills with focused practice sessions
-        </Text>
-      </View>
+        </ScreenSubtitle>
+      </HeaderSection>
 
-      <View style={styles.modesGrid}>
+      <ModesGrid>
         {practiceModes.map((mode) => (
-          <TouchableOpacity
+          <ModeCard
             key={mode.id}
-            style={styles.modeCard}
+            culturalLevel="secondary"
             onPress={() => setSelectedMode(mode)}
-            accessibilityLabel={`Practice ${mode.title}: ${mode.description}`}
-            accessibilityRole="button"
           >
-            <Text style={styles.modeIcon}>{mode.icon}</Text>
-            <Text style={styles.modeTitle}>{mode.title}</Text>
-            <Text style={styles.modeDescription}>{mode.description}</Text>
-          </TouchableOpacity>
+            <ModeIcon>{mode.icon}</ModeIcon>
+            <ModeTitle>{mode.title}</ModeTitle>
+            <ModeDescription>{mode.description}</ModeDescription>
+          </ModeCard>
         ))}
-      </View>
+      </ModesGrid>
 
-      <View style={styles.statsSection}>
-        <Text style={styles.sectionTitle}>Your Progress</Text>
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>0</Text>
-          <Text style={styles.statLabel}>Terms Mastered</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>0</Text>
-          <Text style={styles.statLabel}>Practice Sessions</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statValue}>0%</Text>
-          <Text style={styles.statLabel}>Accuracy Rate</Text>
-        </View>
-      </View>
-    </ScrollView>
+      <StatsSection culturalLevel="primary" title="Your Progress">
+        <StatsGrid>
+          <StatCard>
+            <StatValue>0</StatValue>
+            <StatLabel>Terms Mastered</StatLabel>
+          </StatCard>
+          <StatCard>
+            <StatValue>0</StatValue>
+            <StatLabel>Practice Sessions</StatLabel>
+          </StatCard>
+          <StatCard>
+            <StatValue>0%</StatValue>
+            <StatLabel>Accuracy Rate</StatLabel>
+          </StatCard>
+        </StatsGrid>
+      </StatsSection>
+    </Content>
   );
 
   const renderPronunciationPractice = () => (
-    <View style={styles.practiceContainer}>
-      <View style={styles.practiceHeader}>
-        <TouchableOpacity
-          style={styles.backButton}
+    <PracticeContainer>
+      <PracticeHeader>
+        <BackButton
           onPress={() => setSelectedMode(null)}
           accessibilityLabel="Go back to practice modes"
           accessibilityRole="button"
         >
-          <Text style={styles.backButtonText}>← Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.practiceTitle}>Irish Pronunciation</Text>
-      </View>
+          <BackButtonText>← Back</BackButtonText>
+        </BackButton>
+        <PracticeTitle>Irish Pronunciation</PracticeTitle>
+      </PracticeHeader>
 
       <PronunciationPractice
         terms={irishTerms}
@@ -144,232 +298,93 @@ export const PracticeScreen: React.FC = () => {
           setSelectedMode(null);
         }}
       />
-    </View>
+    </PracticeContainer>
   );
 
   const renderStepPractice = () => (
-    <View style={styles.practiceContainer}>
-      <View style={styles.practiceHeader}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => setSelectedMode(null)}
-        >
-          <Text style={styles.backButtonText}>← Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.practiceTitle}>Step Practice</Text>
-      </View>
+    <PracticeContainer>
+      <PracticeHeader>
+        <BackButton onPress={() => setSelectedMode(null)}>
+          <BackButtonText>← Back</BackButtonText>
+        </BackButton>
+        <PracticeTitle>Step Practice</PracticeTitle>
+      </PracticeHeader>
 
-      <ScrollView style={styles.content}>
-        <View style={styles.comingSoonCard}>
-          <Text style={styles.comingSoonIcon}>🚧</Text>
-          <Text style={styles.comingSoonTitle}>Coming Soon</Text>
-          <Text style={styles.comingSoonDescription}>
+      <Content>
+        <ComingSoonCard culturalLevel="tertiary">
+          <ComingSoonIcon>🚧</ComingSoonIcon>
+          <ComingSoonTitle>Coming Soon</ComingSoonTitle>
+          <ComingSoonDescription>
             Interactive step practice with motion tracking and feedback is in development.
             Check back soon for guided step-by-step practice sessions!
-          </Text>
-        </View>
-      </ScrollView>
-    </View>
+          </ComingSoonDescription>
+        </ComingSoonCard>
+      </Content>
+    </PracticeContainer>
   );
 
   const renderMusicPractice = () => (
-    <View style={styles.practiceContainer}>
-      <View style={styles.practiceHeader}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => setSelectedMode(null)}
-        >
-          <Text style={styles.backButtonText}>← Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.practiceTitle}>Musical Timing</Text>
-      </View>
+    <PracticeContainer>
+      <PracticeHeader>
+        <BackButton onPress={() => setSelectedMode(null)}>
+          <BackButtonText>← Back</BackButtonText>
+        </BackButton>
+        <PracticeTitle>Musical Timing</PracticeTitle>
+      </PracticeHeader>
 
-      <ScrollView style={styles.content}>
-        <View style={styles.comingSoonCard}>
-          <Text style={styles.comingSoonIcon}>🎵</Text>
-          <Text style={styles.comingSoonTitle}>Coming Soon</Text>
-          <Text style={styles.comingSoonDescription}>
+      <Content>
+        <ComingSoonCard culturalLevel="tertiary">
+          <ComingSoonIcon>🎵</ComingSoonIcon>
+          <ComingSoonTitle>Coming Soon</ComingSoonTitle>
+          <ComingSoonDescription>
             Rhythm training and musical timing practice with traditional Irish tunes
             is being developed. Practice dancing to the beat with guided audio cues!
-          </Text>
-        </View>
-      </ScrollView>
-    </View>
+          </ComingSoonDescription>
+        </ComingSoonCard>
+      </Content>
+    </PracticeContainer>
   );
 
   const renderQuizPractice = () => (
-    <View style={styles.practiceContainer}>
-      <View style={styles.practiceHeader}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => setSelectedMode(null)}
-        >
-          <Text style={styles.backButtonText}>← Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.practiceTitle}>Cultural Quiz</Text>
-      </View>
+    <PracticeContainer>
+      <PracticeHeader>
+        <BackButton onPress={() => setSelectedMode(null)}>
+          <BackButtonText>← Back</BackButtonText>
+        </BackButton>
+        <PracticeTitle>Cultural Quiz</PracticeTitle>
+      </PracticeHeader>
 
-      <ScrollView style={styles.content}>
-        <View style={styles.comingSoonCard}>
-          <Text style={styles.comingSoonIcon}>🧠</Text>
-          <Text style={styles.comingSoonTitle}>Coming Soon</Text>
-          <Text style={styles.comingSoonDescription}>
+      <Content>
+        <ComingSoonCard culturalLevel="tertiary">
+          <ComingSoonIcon>🧠</ComingSoonIcon>
+          <ComingSoonTitle>Coming Soon</ComingSoonTitle>
+          <ComingSoonDescription>
             Interactive quizzes about Irish culture, history, and traditional dances
             are in development. Test your cultural knowledge and learn fascinating facts!
-          </Text>
-        </View>
-      </ScrollView>
-    </View>
+          </ComingSoonDescription>
+        </ComingSoonCard>
+      </Content>
+    </PracticeContainer>
   );
 
   if (!selectedMode) {
     return (
-      <SafeAreaView style={styles.container}>
-        {renderModeSelection()}
-      </SafeAreaView>
+      <Container>
+        <SafeAreaView>
+          {renderModeSelection()}
+        </SafeAreaView>
+      </Container>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      {selectedMode.type === 'pronunciation' && renderPronunciationPractice()}
-      {selectedMode.type === 'steps' && renderStepPractice()}
-      {selectedMode.type === 'music' && renderMusicPractice()}
-      {selectedMode.type === 'quiz' && renderQuizPractice()}
-    </SafeAreaView>
+    <Container>
+      <SafeAreaView>
+        {selectedMode.type === 'pronunciation' && renderPronunciationPractice()}
+        {selectedMode.type === 'steps' && renderStepPractice()}
+        {selectedMode.type === 'music' && renderMusicPractice()}
+        {selectedMode.type === 'quiz' && renderQuizPractice()}
+      </SafeAreaView>
+    </Container>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: CulturalTheme.colors.background,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: CulturalTheme.spacing.medium,
-  },
-  headerSection: {
-    paddingVertical: CulturalTheme.spacing.large,
-    alignItems: 'center',
-  },
-  screenTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: CulturalTheme.colors.primary,
-    textAlign: 'center',
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  screenSubtitle: {
-    fontSize: 16,
-    color: CulturalTheme.colors.textSecondary,
-    textAlign: 'center',
-  },
-  modesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginBottom: CulturalTheme.spacing.large,
-  },
-  modeCard: {
-    width: '48%',
-    backgroundColor: CulturalTheme.colors.surface,
-    borderRadius: CulturalTheme.borderRadius.medium,
-    padding: CulturalTheme.spacing.large,
-    alignItems: 'center',
-    marginBottom: CulturalTheme.spacing.medium,
-    ...CulturalTheme.elevation.small,
-  },
-  modeIcon: {
-    fontSize: 40,
-    marginBottom: CulturalTheme.spacing.medium,
-  },
-  modeTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: CulturalTheme.colors.textPrimary,
-    textAlign: 'center',
-    marginBottom: CulturalTheme.spacing.small,
-  },
-  modeDescription: {
-    fontSize: 12,
-    color: CulturalTheme.colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 16,
-  },
-  statsSection: {
-    backgroundColor: CulturalTheme.colors.surface,
-    borderRadius: CulturalTheme.borderRadius.medium,
-    padding: CulturalTheme.spacing.large,
-    ...CulturalTheme.elevation.small,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: CulturalTheme.colors.textPrimary,
-    marginBottom: CulturalTheme.spacing.medium,
-    textAlign: 'center',
-  },
-  statCard: {
-    alignItems: 'center',
-    marginBottom: CulturalTheme.spacing.medium,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: CulturalTheme.colors.primary,
-  },
-  statLabel: {
-    fontSize: 14,
-    color: CulturalTheme.colors.textSecondary,
-    marginTop: CulturalTheme.spacing.small,
-  },
-  practiceContainer: {
-    flex: 1,
-  },
-  practiceHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: CulturalTheme.spacing.medium,
-    paddingVertical: CulturalTheme.spacing.medium,
-    borderBottomWidth: 1,
-    borderBottomColor: CulturalTheme.colors.backgroundSecondary,
-  },
-  backButton: {
-    marginRight: CulturalTheme.spacing.medium,
-  },
-  backButtonText: {
-    fontSize: 16,
-    color: CulturalTheme.colors.primary,
-    fontWeight: '600',
-  },
-  practiceTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: CulturalTheme.colors.textPrimary,
-  },
-  comingSoonCard: {
-    backgroundColor: CulturalTheme.colors.surface,
-    borderRadius: CulturalTheme.borderRadius.medium,
-    padding: CulturalTheme.spacing.extraLarge,
-    alignItems: 'center',
-    marginTop: CulturalTheme.spacing.extraLarge,
-    ...CulturalTheme.elevation.small,
-  },
-  comingSoonIcon: {
-    fontSize: 48,
-    marginBottom: CulturalTheme.spacing.medium,
-  },
-  comingSoonTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: CulturalTheme.colors.textPrimary,
-    marginBottom: CulturalTheme.spacing.medium,
-  },
-  comingSoonDescription: {
-    fontSize: 16,
-    color: CulturalTheme.colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 24,
-  },
-});
