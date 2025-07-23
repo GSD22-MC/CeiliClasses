@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, FlatList } from '../components/ui';
 import { CulturalCard } from '../components/ui/CulturalCard';
 import { CulturalTheme } from '../theme/CulturalTheme';
@@ -29,10 +29,13 @@ const mapDanceToLesson = (dance: CeiliDance): DanceLesson => ({
 
 const danceLessons: DanceLesson[] = ceiliDances.map(mapDanceToLesson);
 
-const difficultyColors = {
-  beginner: CulturalTheme.colors.tertiary,
-  intermediate: CulturalTheme.colors.secondary,
-  advanced: CulturalTheme.colors.primary,
+const getDifficultyColor = (difficulty: string, theme: any) => {
+  switch (difficulty) {
+    case 'beginner': return theme.colors.tertiary;
+    case 'intermediate': return theme.colors.secondary;
+    case 'advanced': return theme.colors.primary;
+    default: return theme.colors.primary;
+  }
 };
 
 // Styled Components
@@ -189,9 +192,14 @@ const LessonsList = styled(View)`
   padding-bottom: ${({ theme }) => theme.spacing.large};
 `;
 
+const StyledFlatList = styled(FlatList)`
+  padding-bottom: ${({ theme }) => theme.spacing.large};
+`;
+
 export const LearnScreen: React.FC = () => {
   const [selectedLesson, setSelectedLesson] = useState<DanceLesson | null>(null);
   const [filterDifficulty, setFilterDifficulty] = useState<string>('All');
+  const theme = useTheme();
 
   const difficulties = ['All', 'beginner', 'intermediate', 'advanced'];
 
@@ -231,7 +239,7 @@ export const LearnScreen: React.FC = () => {
           <LessonTitle>{item.name.english}</LessonTitle>
           <LessonIrishTitle>{item.name.irish}</LessonIrishTitle>
         </LessonTitleContainer>
-        <DifficultyBadge backgroundColor={difficultyColors[item.difficulty]}>
+        <DifficultyBadge backgroundColor={getDifficultyColor(item.difficulty, theme)}>
           <DifficultyText>{item.difficulty}</DifficultyText>
         </DifficultyBadge>
       </LessonHeader>
@@ -308,11 +316,10 @@ export const LearnScreen: React.FC = () => {
 
           {renderDifficultyFilter()}
 
-          <FlatList
+          <StyledFlatList
             data={filteredLessons}
             keyExtractor={(item) => item.id}
             renderItem={renderLessonCard}
-            contentContainerStyle={{ paddingBottom: CulturalTheme.spacing.large }}
           />
         </Content>
       </SafeAreaView>
