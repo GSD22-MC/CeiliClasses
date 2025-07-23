@@ -356,27 +356,158 @@ export const DanceFormation3D: React.FC<DanceFormation3DProps> = ({
   // Animate dancers for current step
   const animateDancers = () => {
     const time = Date.now() * 0.001;
+    const currentStepData = steps[currentStep];
+    
+    if (!currentStepData) return;
+    
+    // Animate based on actual step content
+    animateStepMovement(currentStepData, time);
+  };
+
+  // Animate specific dance movements based on step description
+  const animateStepMovement = (stepData: DanceStep, time: number) => {
+    const stepName = stepData.name.toLowerCase();
+    const description = stepData.description.toLowerCase();
     
     dancersRef.current.forEach((dancer, index) => {
-      // Basic dance movements - stepping and swaying
+      // Default step timing
       const stepOffset = (index * Math.PI) / 4;
-      const stepHeight = Math.sin(time * 4 + stepOffset) * 0.2;
-      dancer.position.y = Math.max(0, stepHeight);
+      const baseStepHeight = Math.sin(time * 4 + stepOffset) * 0.1;
+      dancer.position.y = Math.max(0, baseStepHeight);
       
-      // Arm movements
+      // Step-specific animations
+      if (stepName.includes('advance') && stepName.includes('retire')) {
+        animateAdvanceRetire(dancer, index, time);
+      } else if (stepName.includes('right and left') || description.includes('exchange places')) {
+        animateRightAndLeft(dancer, index, time);
+      } else if (stepName.includes('dance with opposite') || description.includes('opposite')) {
+        animateDanceWithOpposite(dancer, index, time);
+      } else if (stepName.includes('dance around') || description.includes('circle around')) {
+        animateDanceAround(dancer, index, time);
+      } else if (stepName.includes('sides') || description.includes('sidestep')) {
+        animateSides(dancer, index, time);
+      } else if (stepName.includes('hands across') || description.includes('hands across')) {
+        animateHandsAcross(dancer, index, time);
+      } else {
+        // Default movement for unrecognized steps
+        animateDefaultStep(dancer, index, time);
+      }
+    });
+  };
+
+  // Specific step animations
+  const animateAdvanceRetire = (dancer: THREE.Group, index: number, time: number) => {
+    const cycle = Math.sin(time * 2) * 0.5 + 0.5; // 0 to 1
+    const isAdvancing = cycle > 0.5;
+    
+    if (isAdvancing) {
+      // Move forward
+      dancer.position.z = Math.sin(time * 2) * 2;
+    } else {
+      // Retire back
+      dancer.position.z = -Math.sin(time * 2) * 2;
+    }
+    
+    // Partners move together
+    const partnersMove = index % 2 === 0;
+    if (partnersMove) {
+      dancer.position.x += Math.sin(time * 2) * 0.3;
+    }
+  };
+
+  const animateRightAndLeft = (dancer: THREE.Group, index: number, time: number) => {
+    const isLady = index % 2 === 1;
+    const cycle = Math.floor(time * 0.5) % 2; // 0 or 1
+    
+    if (cycle === 0 && isLady) {
+      // Ladies exchange first
+      dancer.position.x = Math.sin(time * 3) * 3;
+      dancer.position.z = Math.cos(time * 3) * 0.5;
+    } else if (cycle === 1 && !isLady) {
+      // Gentlemen exchange second
+      dancer.position.x = -Math.sin(time * 3) * 3;
+      dancer.position.z = Math.cos(time * 3) * 0.5;
+    }
+  };
+
+  const animateDanceWithOpposite = (dancer: THREE.Group, index: number, time: number) => {
+    const oppositeIndex = (index + 2) % 4; // Find opposite dancer
+    const sideStep = Math.sin(time * 3) * 2;
+    
+    // Move toward opposite, then back
+    dancer.position.x += sideStep * (index % 2 === 0 ? 1 : -1);
+    dancer.rotation.y = Math.atan2(sideStep, 0);
+  };
+
+  const animateDanceAround = (dancer: THREE.Group, index: number, time: number) => {
+    const radius = 2;
+    const angle = time * 2 + (index * Math.PI / 2);
+    
+    dancer.position.x = Math.cos(angle) * radius;
+    dancer.position.z = Math.sin(angle) * radius;
+    dancer.rotation.y = angle + Math.PI / 2;
+  };
+
+  const animateSides = (dancer: THREE.Group, index: number, time: number) => {
+    const sideMovement = Math.sin(time * 4) * 1.5;
+    dancer.position.x = sideMovement * (index % 2 === 0 ? 1 : -1);
+    
+    // "Two short threes" - quick steps
+    const quickSteps = Math.sin(time * 8) * 0.3;
+    dancer.position.y = Math.max(0, quickSteps);
+  };
+
+  const animateHandsAcross = (dancer: THREE.Group, index: number, time: number) => {
+    const centerRadius = 1;
+    const angle = time * 3 + (index * Math.PI / 2);
+    
+    // Move to center and rotate
+    dancer.position.x = Math.cos(angle) * centerRadius;
+    dancer.position.z = Math.sin(angle) * centerRadius;
+    dancer.rotation.y = angle;
+    
+    // Raise arms to simulate "hands across"
+    const leftArm = dancer.children[2];
+    const rightArm = dancer.children[3];
+    if (leftArm && rightArm) {
+      leftArm.rotation.z = Math.PI / 3; // Raised
+      rightArm.rotation.z = -Math.PI / 3; // Raised
+    }
+  };
+
+  const animateDefaultStep = (dancer: THREE.Group, index: number, time: number) => {
+    const stepOffset = (index * Math.PI) / 4;
+    
+    // Basic stepping
+    const stepHeight = Math.sin(time * 4 + stepOffset) * 0.2;
+    dancer.position.y = Math.max(0, stepHeight);
+    
+    // Arm movements
+    const leftArm = dancer.children[2];
+    const rightArm = dancer.children[3];
+    
+    if (leftArm && rightArm) {
+      leftArm.rotation.z = Math.PI / 6 + Math.sin(time * 3 + stepOffset) * 0.2;
+      rightArm.rotation.z = -Math.PI / 6 - Math.sin(time * 3 + stepOffset) * 0.2;
+    }
+  };
+
+  // Reset dancer positions when step changes
+  useEffect(() => {
+    resetDancerPositions();
+  }, [currentStep]);
+
+  const resetDancerPositions = () => {
+    dancersRef.current.forEach((dancer, index) => {
+      // Reset to formation positions
+      positionDancer(dancer, index, formation);
+      
+      // Reset arm positions
       const leftArm = dancer.children[2];
       const rightArm = dancer.children[3];
-      
       if (leftArm && rightArm) {
-        leftArm.rotation.z = Math.PI / 6 + Math.sin(time * 3 + stepOffset) * 0.3;
-        rightArm.rotation.z = -Math.PI / 6 - Math.sin(time * 3 + stepOffset) * 0.3;
-      }
-
-      // Formation-specific movements
-      if (formation === 'circle') {
-        // Dancers face center and step in rhythm
-        const angle = Math.atan2(dancer.position.z, dancer.position.x);
-        dancer.rotation.y = angle + Math.PI;
+        leftArm.rotation.z = Math.PI / 6;
+        rightArm.rotation.z = -Math.PI / 6;
       }
     });
   };

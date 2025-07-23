@@ -175,6 +175,51 @@ const CulturalNoteText = styled.p`
   flex: 1;
 `;
 
+const StepControls = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.small};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const StepCallButton = styled.button<{ isPlaying: boolean }>`
+  background-color: ${({ isPlaying, theme }) =>
+    isPlaying ? theme.colors.secondary : theme.colors.primary};
+  color: ${({ theme }) => theme.colors.onPrimary};
+  border: none;
+  padding: ${({ theme }) => theme.spacing.small} ${({ theme }) => theme.spacing.medium};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const StepCallToggle = styled.button<{ enabled: boolean }>`
+  background-color: ${({ enabled, theme }) =>
+    enabled ? theme.colors.tertiary : theme.colors.outline};
+  color: ${({ theme }) => theme.colors.onPrimary};
+  border: none;
+  padding: ${({ theme }) => theme.spacing.small};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.75rem;
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
 const CompleteStepButton = styled.button<{ completed: boolean }>`
   background-color: ${({ completed, theme }) =>
     completed ? theme.colors.tertiary : theme.colors.primary};
@@ -296,11 +341,48 @@ export const DanceLessonPlayer: React.FC<DanceLessonPlayerProps> = ({
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [showCulturalContext, setShowCulturalContext] = useState(false);
   const [showMusicPlayer, setShowMusicPlayer] = useState(false);
+  const [isStepPlaying, setIsStepPlaying] = useState(false);
+  const [stepCallEnabled, setStepCallEnabled] = useState(true);
 
   const videoRef = useRef<any>(null);
   const musicRef = useRef<any>(null);
 
   const currentStepData = steps[currentStep];
+
+  // Step calling functionality
+  const callOutStep = (stepData: DanceStep) => {
+    if (!stepCallEnabled || !stepData) return;
+
+    // Use Web Speech API to call out the step
+    const utterance = new SpeechSynthesisUtterance();
+    utterance.text = `Ready... and ${stepData.name}. ${stepData.description}`;
+    utterance.rate = 0.8; // Slower for instruction
+    utterance.volume = 0.7;
+    utterance.lang = 'en-US';
+    
+    utterance.onstart = () => setIsStepPlaying(true);
+    utterance.onend = () => setIsStepPlaying(false);
+    
+    speechSynthesis.speak(utterance);
+  };
+
+  const playStepSequence = () => {
+    if (!currentStepData) return;
+    
+    setIsStepPlaying(true);
+    
+    // Call out preparation
+    setTimeout(() => {
+      const prepUtterance = new SpeechSynthesisUtterance("Ready dancers...");
+      prepUtterance.rate = 0.9;
+      speechSynthesis.speak(prepUtterance);
+    }, 500);
+    
+    // Call out the step
+    setTimeout(() => {
+      callOutStep(currentStepData);
+    }, 2000);
+  };
 
   const videoOptions = {
     height: '450',
@@ -436,6 +518,23 @@ export const DanceLessonPlayer: React.FC<DanceLessonPlayerProps> = ({
               <CulturalNoteText>{currentStepData.culturalNote}</CulturalNoteText>
             </CulturalNote>
           )}
+
+          <StepControls>
+            <StepCallButton
+              isPlaying={isStepPlaying}
+              onClick={playStepSequence}
+              disabled={isStepPlaying}
+            >
+              {isStepPlaying ? '🔊 Calling...' : '📢 Call Step'}
+            </StepCallButton>
+            <StepCallToggle
+              enabled={stepCallEnabled}
+              onClick={() => setStepCallEnabled(!stepCallEnabled)}
+              title={stepCallEnabled ? 'Disable step calling' : 'Enable step calling'}
+            >
+              {stepCallEnabled ? '🔊' : '🔇'}
+            </StepCallToggle>
+          </StepControls>
 
           <CompleteStepButton
             completed={completedSteps.includes(currentStep)}
