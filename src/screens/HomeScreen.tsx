@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 const Container = styled.div`
   min-height: calc(100vh - 80px);
   padding: 2rem;
-  background: linear-gradient(135deg, ${props => props.theme.colors.background} 0%, ${props => props.theme.colors.surfaceVariant} 100%);
+  background: linear-gradient(135deg, ${({ theme }) => theme.colors.background} 0%, ${({ theme }) => theme.colors.surfaceVariant} 100%);
 `;
 
 const HeroSection = styled.section`
@@ -19,7 +19,7 @@ const HeroSection = styled.section`
 const Title = styled(motion.h1)`
   font-size: 3rem;
   font-weight: bold;
-  color: ${props => props.theme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
   margin-bottom: 1rem;
 
   @media (max-width: 768px) {
@@ -29,30 +29,30 @@ const Title = styled(motion.h1)`
 
 const Subtitle = styled(motion.p)`
   font-size: 1.25rem;
-  color: ${props => props.theme.colors.onSurfaceVariant};
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
   margin-bottom: 2rem;
   line-height: 1.6;
 `;
 
 const IrishQuote = styled(motion.div)`
-  background: ${props => props.theme.colors.surface};
+  background: ${({ theme }) => theme.colors.surface};
   padding: 2rem;
-  border-radius: ${props => props.theme.borderRadius.large};
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   margin: 3rem 0;
-  box-shadow: ${props => props.theme.elevation.medium.boxShadow};
+  box-shadow: ${({ theme }) => theme.elevation.medium.boxShadow};
 `;
 
 const QuoteText = styled.p`
   font-size: 1.5rem;
   font-style: italic;
-  color: ${props => props.theme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
   text-align: center;
   margin-bottom: 0.5rem;
 `;
 
 const QuoteTranslation = styled.p`
   font-size: 1rem;
-  color: ${props => props.theme.colors.onSurfaceVariant};
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
   text-align: center;
 `;
 
@@ -64,11 +64,11 @@ const FeatureGrid = styled.div`
 `;
 
 const FeatureCard = styled(motion.div)`
-  background: ${props => props.theme.colors.surface};
+  background: ${({ theme }) => theme.colors.surface};
   padding: 2rem;
-  border-radius: ${props => props.theme.borderRadius.large};
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   text-align: center;
-  box-shadow: ${props => props.theme.elevation.medium.boxShadow};
+  box-shadow: ${({ theme }) => theme.elevation.medium.boxShadow};
   transition: transform 0.2s ease;
 
   &:hover {
@@ -84,12 +84,12 @@ const FeatureIcon = styled.div`
 const FeatureTitle = styled.h3`
   font-size: 1.25rem;
   font-weight: 600;
-  color: ${props => props.theme.colors.onSurface};
+  color: ${({ theme }) => theme.colors.onSurface};
   margin-bottom: 0.5rem;
 `;
 
 const FeatureDescription = styled.p`
-  color: ${props => props.theme.colors.onSurfaceVariant};
+  color: ${({ theme }) => theme.colors.onSurfaceVariant};
   line-height: 1.5;
 `;
 
@@ -100,10 +100,10 @@ const CTASection = styled.section`
 
 const CTAButton = styled(Link)`
   display: inline-block;
-  background: ${props => props.theme.colors.primary};
-  color: ${props => props.theme.colors.onPrimary};
+  background: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.onPrimary};
   padding: 1rem 2rem;
-  border-radius: ${props => props.theme.borderRadius.large};
+  border-radius: ${({ theme }) => theme.borderRadius.large};
   font-size: 1.125rem;
   font-weight: 600;
   text-decoration: none;
@@ -111,20 +111,20 @@ const CTAButton = styled(Link)`
   margin: 0 1rem;
 
   &:hover {
-    background: ${props => props.theme.colors.primaryContainer};
-    color: ${props => props.theme.colors.onPrimaryContainer};
+    background: ${({ theme }) => theme.colors.primaryContainer};
+    color: ${({ theme }) => theme.colors.onPrimaryContainer};
     transform: translateY(-2px);
   }
 `;
 
 const SecondaryButton = styled(CTAButton)`
   background: transparent;
-  color: ${props => props.theme.colors.primary};
-  border: 2px solid ${props => props.theme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
+  border: 2px solid ${({ theme }) => theme.colors.primary};
 
   &:hover {
-    background: ${props => props.theme.colors.primary};
-    color: ${props => props.theme.colors.onPrimary};
+    background: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.onPrimary};
   }
 `;
 
