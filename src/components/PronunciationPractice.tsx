@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { View, Text, TouchableOpacity, Icon } from './ui';
 import { CulturalCard } from './ui/CulturalCard';
-import { CulturalTheme } from '../theme/CulturalTheme';
 import { PronunciationButton } from './PronunciationButton';
 import { useAuthStore } from '../stores/authStore';
 
@@ -211,7 +210,7 @@ export const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
   const [feedback, setFeedback] = useState<string>('');
   const [hasPermission, setHasPermission] = useState(false);
 
-  const audioRecorderPlayer = useRef(new AudioRecorderPlayer()).current;
+  const theme = useTheme();
   const { updatePronunciationProgress } = useAuthStore();
 
   const requestAudioPermission = async () => {
@@ -370,9 +369,9 @@ export const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 0.8) return CulturalTheme.colors.tertiary;
-    if (score >= 0.6) return CulturalTheme.colors.secondary;
-    return CulturalTheme.colors.outline;
+    if (score >= 0.8) return theme.colors.tertiary;
+    if (score >= 0.6) return theme.colors.secondary;
+    return theme.colors.outline;
   };
 
   const isMastered = bestScore >= targetScore;
@@ -428,7 +427,7 @@ export const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
       <Header>
         <IrishTerm>{currentTerm.term}</IrishTerm>
         {isMastered && (
-          <Icon name="verified" size={24} color={CulturalTheme.colors.tertiary} />
+          <Icon name="verified" size={24} color={theme.colors.tertiary} />
         )}
       </Header>
 
@@ -502,7 +501,7 @@ export const PronunciationPractice: React.FC<PronunciationPracticeProps> = ({
       {/* Mastery Achievement */}
       {isMastered && (
         <MasteryBanner>
-          <Icon name="celebration" size={20} color={CulturalTheme.colors.onTertiary} />
+          <Icon name="celebration" size={20} color={theme.colors.onTertiary} />
           <MasteryText>
             Pronunciation Mastered! 
           </MasteryText>

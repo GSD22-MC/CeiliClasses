@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
-import { CulturalTheme } from '../theme/CulturalTheme';
 
 interface PronunciationButtonProps {
   text: string;

@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import * as THREE from 'three';
-import { CulturalTheme } from '../theme/CulturalTheme';
 
 interface DanceStep {
   stepNumber: number;

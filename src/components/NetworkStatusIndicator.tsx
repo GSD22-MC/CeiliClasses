@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { View, Text, Icon } from './ui';
 import { CulturalCard } from './ui/CulturalCard';
-import { CulturalTheme } from '../theme/CulturalTheme';
 import { offlineService } from '../services/OfflineService';
 
 interface NetworkStatusIndicatorProps {
@@ -45,6 +44,7 @@ export const NetworkStatusIndicator: React.FC<NetworkStatusIndicatorProps> = ({
 }) => {
   const [isConnected, setIsConnected] = useState(true);
   const [pendingActions, setPendingActions] = useState(0);
+  const theme = useTheme();
 
   useEffect(() => {
     // Check connection status using navigator.onLine
@@ -91,7 +91,7 @@ export const NetworkStatusIndicator: React.FC<NetworkStatusIndicatorProps> = ({
           <Icon 
             name={isConnected ? 'sync' : 'wifi-off'} 
             size={16} 
-            color={isConnected ? CulturalTheme.colors.primary : CulturalTheme.colors.error} 
+            color={isConnected ? theme.colors.primary : theme.colors.error} 
           />
           <StatusText>
             {isConnected 

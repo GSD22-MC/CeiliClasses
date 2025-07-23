@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled, { useTheme } from 'styled-components';
 import YouTube from 'react-youtube';
-import { CulturalTheme } from '../theme/CulturalTheme';
 import { PronunciationButton } from './PronunciationButton';
 import { DanceFormation3D } from './DanceFormation3D';
 

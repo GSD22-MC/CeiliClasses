@@ -1,6 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { CulturalTheme } from '../theme/CulturalTheme';
+import { useTheme } from 'styled-components';
 
 // Onboarding Screens
 import WelcomeScreen from '../screens/onboarding/WelcomeScreen';
@@ -24,15 +24,17 @@ export type OnboardingStackParamList = {
 const Stack = createStackNavigator<OnboardingStackParamList>();
 
 const OnboardingNavigator: React.FC = () => {
+  const theme = useTheme();
+  
   return (
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: CulturalTheme.colors.primary,
+          backgroundColor: theme.colors.primary,
           elevation: 0,
           shadowOpacity: 0,
         },
-        headerTintColor: CulturalTheme.colors.onPrimary,
+        headerTintColor: theme.colors.onPrimary,
         headerTitleStyle: {
           fontFamily: 'System',
           fontSize: 18,
