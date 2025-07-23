@@ -61,13 +61,13 @@ const MeaningText = styled(Text)`
 
 const ProgressText = styled(Text)<{ completed: boolean }>`
   font-size: 14px;
-  color: ${props => props.completed ? CulturalTheme.colors.primary : CulturalTheme.colors.outline};
+  color: ${({ completed, theme }) => completed ? theme.colors.primary : theme.colors.outline};
   text-align: center;
   margin-top: 16px;
 `;
 
 const ContinueButton = styled(TouchableOpacity)<{ enabled: boolean }>`
-  background-color: ${props => props.enabled ? CulturalTheme.colors.primary : CulturalTheme.colors.outline};
+  background-color: ${({ enabled, theme }) => enabled ? theme.colors.primary : theme.colors.outline};
   padding: 16px 32px;
   border-radius: 8px;
   align-items: center;
@@ -82,6 +82,7 @@ const ContinueButtonText = styled(Text)`
 
 const PronunciationMasteryScreen: React.FC = () => {
   const navigation = useNavigation();
+  const theme = useTheme();
   const [hasListened, setHasListened] = useState(false);
 
   const handlePronunciationPlay = () => {
@@ -119,7 +120,7 @@ const PronunciationMasteryScreen: React.FC = () => {
         <View style={{ padding: 16 }}>
           <Text style={{ 
             fontSize: 14, 
-            color: CulturalTheme.colors.onSurface, 
+            color: theme.colors.onSurface, 
             textAlign: 'center',
             lineHeight: 20
           }}>

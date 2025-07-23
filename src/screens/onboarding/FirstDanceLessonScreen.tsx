@@ -31,11 +31,11 @@ const Subtitle = styled(Text)`
 `;
 
 const DanceCard = styled(TouchableOpacity)<{ selected: boolean }>`
-  background-color: ${props => props.selected ? CulturalTheme.colors.primaryContainer : CulturalTheme.colors.surface};
+  background-color: ${({ selected, theme }) => selected ? theme.colors.primaryContainer : theme.colors.surface};
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 16px;
-  border: 2px solid ${props => props.selected ? CulturalTheme.colors.primary : 'transparent'};
+  border: 2px solid ${({ selected, theme }) => selected ? theme.colors.primary : 'transparent'};
 `;
 
 const DanceName = styled(Text)`
@@ -59,7 +59,7 @@ const FormationContainer = styled(View)`
 `;
 
 const ContinueButton = styled(TouchableOpacity)<{ enabled: boolean }>`
-  background-color: ${props => props.enabled ? CulturalTheme.colors.primary : CulturalTheme.colors.outline};
+  background-color: ${({ enabled, theme }) => enabled ? theme.colors.primary : theme.colors.outline};
   padding: 16px 32px;
   border-radius: 8px;
   align-items: center;
@@ -102,6 +102,7 @@ const beginnerDances: Dance[] = [
 
 const FirstDanceLessonScreen: React.FC = () => {
   const navigation = useNavigation();
+  const theme = useTheme();
   const [selectedDance, setSelectedDance] = useState<string | null>(null);
 
   const handleDanceSelect = (danceName: string) => {
@@ -143,7 +144,7 @@ const FirstDanceLessonScreen: React.FC = () => {
         <View style={{ padding: 16, marginTop: 16 }}>
           <Text style={{ 
             fontSize: 14, 
-            color: CulturalTheme.colors.onSurface, 
+            color: theme.colors.onSurface, 
             textAlign: 'center',
             lineHeight: 20
           }}>
