@@ -27,6 +27,38 @@ const danceVideoMappings: Record<string, {
     frontView: 'iR1O3A6hyYw', // Sweets of May instruction video
     stepTimings: [0, 75, 150, 225, 300], // 4 steps - can be fine-tuned based on video content
   },
+  'siege-of-ennis': {
+    frontView: '4ZhZ9tKyHAE', // Siege of Ennis instruction video
+    stepTimings: [0, 60, 120, 180], // 4 steps - can be fine-tuned based on video content
+  },
+  'high-cauled-cap': {
+    frontView: 'Jgx1ewc9n4c', // High Cauled Cap instruction video
+    stepTimings: [0, 45, 90, 135, 180, 225], // 6 steps - can be fine-tuned based on video content
+  },
+  'four-hand-reel': {
+    frontView: 'vsdOzgU5uuo', // Four Hand Reel instruction video
+    stepTimings: [0, 50, 100, 150, 200, 250], // 6 steps - can be fine-tuned based on video content
+  },
+  'eight-hand-reel': {
+    frontView: 'oTcNyDmRUiI', // Eight Hand Reel instruction video
+    stepTimings: [0, 60, 120, 180, 240], // 5 steps - can be fine-tuned based on video content
+  },
+  'humours-of-bandon': {
+    frontView: 'J-Af6ojFf48', // Humours of Bandon instruction video
+    stepTimings: [0, 50, 100, 150], // 4 steps - can be fine-tuned based on video content
+  },
+  'morris-reel': {
+    frontView: 'D8yj3pdmbgc', // Morris Reel instruction video
+    stepTimings: [0, 40, 80, 120], // 4 steps - can be fine-tuned based on video content
+  },
+  'eight-hand-jig': {
+    frontView: 'cp1_teFASyE', // Eight Hand Jig instruction video
+    stepTimings: [0, 60, 120, 180], // 4 steps - can be fine-tuned based on video content
+  },
+  'harvest-time-jig': {
+    frontView: 'FqsC5Xsk66Y', // Harvest Time Jig instruction video
+    stepTimings: [0, 50, 100, 150], // 3 steps - can be fine-tuned based on video content
+  },
   // 
   // To add more videos, use this format:
   // 'dance-id': {

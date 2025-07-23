@@ -2054,6 +2054,297 @@ export const ceiliDances: CeiliDance[] = [
     ],
     "culturalContext": "Traditional Bealtaine (May Day) celebration dance from Connacht province. Represents fertility, growth, and courtship themes central to ancient Celtic spring festival. Intricate weaving patterns symbolize the interconnection of community and the promise of harvest. Connected to ancient Celtic fertility celebrations and matchmaking traditions.",
     "region": "Connacht"
+  },
+  {
+    "id": "morris-reel",
+    "name": {
+      "english": "Morris Reel",
+      "irish": "Rinnce Mórais"
+    },
+    "difficulty": "intermediate",
+    "duration": 3,
+    "participants": 8,
+    "formation": "Eight dancers in square formation, similar to Eight-Hand Reel but with Morris influence",
+    "music": {
+      "title": "Morris Reel",
+      "tempo": "Lively reel time",
+      "timeSignature": "2/4"
+    },
+    "steps": [
+      {
+        "id": "morris-reel-step-1",
+        "name": {
+          "english": "Lead Around",
+          "irish": "Treorú Timpeall"
+        },
+        "description": "As in Eight-Hand Reel, couples lead around clockwise (8 bars), release hands, reverse direction and lead back to places (8 bars).",
+        "counts": 16,
+        "footwork": "Standard céilí footwork",
+        "handholds": "Inside hands joined",
+        "tips": [
+          "Maintain equal spacing between couples",
+          "Focus on timing and coordination",
+          "Keep the reel tempo lively"
+        ],
+        "commonMistakes": [
+          "Uneven spacing between couples",
+          "Poor timing with the music",
+          "Rushing through the movements"
+        ]
+      },
+      {
+        "id": "morris-reel-step-2",
+        "name": {
+          "english": "Morris Sides",
+          "irish": "Taobhanna Mórais"
+        },
+        "description": "Gentlemen sidestep right behind partners, ladies sidestep left in front (4 bars), finish with Morris-style flourish (2 bars), sidestep back to place (4 bars), finish with flourish (2 bars).",
+        "counts": 12,
+        "footwork": "Standard céilí footwork with Morris influence",
+        "handholds": "No hands",
+        "tips": [
+          "Add Morris-style arm movements",
+          "Keep the sidestep crisp and precise",
+          "Coordinate the flourishes together"
+        ],
+        "commonMistakes": [
+          "Missing the Morris flourishes",
+          "Poor sidestep coordination",
+          "Not maintaining formation"
+        ]
+      },
+      {
+        "id": "morris-reel-step-3",
+        "name": {
+          "english": "Hands Across",
+          "irish": "Lámha Trasna"
+        },
+        "description": "All give right hands across in center, dance around clockwise (4 bars), release hands, give left hands across, dance back to places (4 bars).",
+        "counts": 8,
+        "footwork": "Standard céilí footwork",
+        "handholds": "Right hands across, then left hands across",
+        "tips": [
+          "Keep hands at shoulder height",
+          "Maintain even spacing in the wheel",
+          "Strong contact but don't grip tightly"
+        ],
+        "commonMistakes": [
+          "Hands too low or too high",
+          "Uneven wheel formation",
+          "Rushing the hand changes"
+        ]
+      },
+      {
+        "id": "morris-reel-step-4",
+        "name": {
+          "english": "Morris Chain",
+          "irish": "Slabhra Mórais"
+        },
+        "description": "Right and left chain movement with Morris-style arm swings and stepping (8 bars), return to places with reverse chain (8 bars).",
+        "counts": 16,
+        "footwork": "Standard céilí footwork with Morris stepping",
+        "handholds": "Right and left hands alternating",
+        "tips": [
+          "Add characteristic Morris arm swings",
+          "Keep the chain movement flowing",
+          "Coordinate stepping with partners"
+        ],
+        "commonMistakes": [
+          "Missing the Morris styling",
+          "Tangled chain movements",
+          "Poor partner coordination"
+        ]
+      }
+    ],
+    "culturalContext": "A fusion dance combining traditional Irish céilí movements with English Morris dance influences. Part of the official Ar Rinci Foirne collection, representing cultural exchange between Irish and English folk traditions.",
+    "region": "Traditional Irish"
+  },
+  {
+    "id": "eight-hand-jig",
+    "name": {
+      "english": "Eight Hand Jig",
+      "irish": "Port Ocht Lámh"
+    },
+    "difficulty": "intermediate",
+    "duration": 4,
+    "participants": 8,
+    "formation": "Eight dancers in square formation, similar to Eight-Hand Reel but danced in jig time",
+    "music": {
+      "title": "Eight Hand Jig",
+      "tempo": "Lively jig time",
+      "timeSignature": "6/8"
+    },
+    "steps": [
+      {
+        "id": "eight-hand-jig-step-1",
+        "name": {
+          "english": "Lead Around (Jig Time)",
+          "irish": "Treorú Timpeall (Am Port)"
+        },
+        "description": "As in Eight-Hand Reel but with jig stepping. Couples lead around with promenade step (8 bars), release hands, reverse direction and lead back to places (8 bars).",
+        "counts": 16,
+        "footwork": "Jig stepping throughout",
+        "handholds": "Inside hands joined",
+        "tips": [
+          "Use proper jig stepping, not reel stepping",
+          "Maintain the lilting jig rhythm",
+          "Keep equal spacing between couples"
+        ],
+        "commonMistakes": [
+          "Using reel steps instead of jig steps",
+          "Not maintaining the jig rhythm",
+          "Poor formation spacing"
+        ]
+      },
+      {
+        "id": "eight-hand-jig-step-2",
+        "name": {
+          "english": "Sides (Jig Time)",
+          "irish": "Taobhanna (Am Port)"
+        },
+        "description": "Gentlemen sidestep right behind partners, ladies sidestep left in front with jig step (4 bars), finish with rising step (2 bars), sidestep back with jig step (4 bars), finish with rising step (2 bars).",
+        "counts": 12,
+        "footwork": "Jig stepping with rising step",
+        "handholds": "No hands",
+        "tips": [
+          "Clear distinction between jig step and rising step",
+          "Keep the jig bounce throughout",
+          "Coordinate the rising steps together"
+        ],
+        "commonMistakes": [
+          "Mixing up jig and rising steps",
+          "Lost jig rhythm",
+          "Poor timing on rising steps"
+        ]
+      },
+      {
+        "id": "eight-hand-jig-step-3",
+        "name": {
+          "english": "Hands Across (Jig Time)",
+          "irish": "Lámha Trasna (Am Port)"
+        },
+        "description": "All give right hands across in center, dance around with jig step (4 bars), release hands, give left hands across, dance back to places with jig step (4 bars).",
+        "counts": 8,
+        "footwork": "Jig stepping throughout",
+        "handholds": "Right hands across, then left hands across",
+        "tips": [
+          "Maintain jig rhythm in the wheel",
+          "Keep hands steady at shoulder height",
+          "Smooth transition between right and left hands"
+        ],
+        "commonMistakes": [
+          "Dropping to reel step in the wheel",
+          "Unstable hand wheel",
+          "Rushed hand transitions"
+        ]
+      },
+      {
+        "id": "eight-hand-jig-step-4",
+        "name": {
+          "english": "Chain (Jig Time)",
+          "irish": "Slabhra (Am Port)"
+        },
+        "description": "Right and left chain with jig stepping throughout (8 bars), return to places with reverse chain and jig stepping (8 bars).",
+        "counts": 16,
+        "footwork": "Jig stepping throughout",
+        "handholds": "Right and left hands alternating",
+        "tips": [
+          "Keep jig rhythm through all hand changes",
+          "Smooth flowing chain movement",
+          "Clear hand changes with partners"
+        ],
+        "commonMistakes": [
+          "Losing jig rhythm during hand changes",
+          "Tangled chain movements",
+          "Unclear hand transitions"
+        ]
+      }
+    ],
+    "culturalContext": "Eight-hand figure dance in jig time, part of the official Ar Rinci Foirne collection. Combines the complexity of eight-hand formations with the lilting rhythm of jig music, requiring dancers to maintain proper jig stepping throughout.",
+    "region": "Traditional Irish"
+  },
+  {
+    "id": "harvest-time-jig",
+    "name": {
+      "english": "Harvest Time Jig",
+      "irish": "Port Am an Fhómhair"
+    },
+    "difficulty": "intermediate",
+    "duration": 3,
+    "participants": 8,
+    "formation": "Eight dancers in longways formation, four couples facing each other",
+    "music": {
+      "title": "Harvest Time Jig",
+      "tempo": "Moderate jig time",
+      "timeSignature": "6/8"
+    },
+    "steps": [
+      {
+        "id": "harvest-time-jig-step-1",
+        "name": {
+          "english": "Harvest Gathering",
+          "irish": "Cnuasach an Fhómhair"
+        },
+        "description": "Lines advance and retire twice, representing gathering the harvest (8 bars). On second advance, couples pass through and turn to face back (8 bars).",
+        "counts": 16,
+        "footwork": "Jig stepping throughout",
+        "handholds": "Hands joined in lines",
+        "tips": [
+          "Think of gathering motions during advances",
+          "Keep strong line formation",
+          "Clear pass-through on second advance"
+        ],
+        "commonMistakes": [
+          "Weak line formation",
+          "Confusion on the pass-through",
+          "Not maintaining jig rhythm"
+        ]
+      },
+      {
+        "id": "harvest-time-jig-step-2",
+        "name": {
+          "english": "Sheaf Binding",
+          "irish": "Ceangal na Scuab"
+        },
+        "description": "Top couple advance and cast off, followed by all couples in succession, representing binding sheaves of grain (16 bars). Reform lines at bottom.",
+        "counts": 16,
+        "footwork": "Jig stepping with casting movements",
+        "handholds": "Inside hands for couples",
+        "tips": [
+          "Lead couple sets the rhythm for casting",
+          "Follow in proper succession",
+          "Think of binding grain sheaves"
+        ],
+        "commonMistakes": [
+          "Poor succession timing",
+          "Lost during the casting",
+          "Not following the lead couple"
+        ]
+      },
+      {
+        "id": "harvest-time-jig-step-3",
+        "name": {
+          "english": "Thanksgiving Circle",
+          "irish": "Ciorcal Buíochais"
+        },
+        "description": "All join hands in circle, advance to center with arms raised (4 bars), retire with arms lowered (4 bars), sidestep left around circle (4 bars), sidestep right back to place (4 bars).",
+        "counts": 16,
+        "footwork": "Jig stepping in circle formation",
+        "handholds": "All hands joined in circle",
+        "tips": [
+          "Express gratitude in arm movements",
+          "Keep circle even during sidesteps",
+          "Celebrate the harvest theme"
+        ],
+        "commonMistakes": [
+          "Uneven circle formation",
+          "Missing the thanksgiving theme",
+          "Poor sidestep coordination"
+        ]
+      }
+    ],
+    "culturalContext": "Seasonal celebration dance from the official Ar Rinci Foirne collection, representing the joy and gratitude of harvest time. Movements symbolize gathering crops, binding sheaves, and community thanksgiving, connecting dancers to Ireland's agricultural heritage.",
+    "region": "Traditional Irish"
   }
 ];
 
@@ -2076,7 +2367,7 @@ export const danceCategories = {
   
   // By difficulty level
   beginner: ["walls-of-limerick","an-rince-mor","every-mans-chance"],
-  intermediate: ["siege-of-ennis","four-hand-reel","bridge-of-athlone","humours-of-bandon","the-hey","the-trenchmor","hooks-and-eyes","pantomimic-dances","sweets-of-may"],
+  intermediate: ["siege-of-ennis","four-hand-reel","bridge-of-athlone","humours-of-bandon","the-hey","the-trenchmor","hooks-and-eyes","pantomimic-dances","sweets-of-may","morris-reel","eight-hand-jig","harvest-time-jig"],
   advanced: ["eight-hand-reel","high-cauled-cap","waves-of-tory","fionnala","the-fairy-reel","three-tunes","modern-competition-choreography"]
 };
 
@@ -2119,11 +2410,11 @@ export const regionalDistribution = {
 
 // Statistics for dashboard display
 export const catalogStats = {
-  totalDances: 19,
+  totalDances: 22,
   historicalSpan: '500+ years (1500s-Present)',
   difficulties: {
     beginner: 3,
-    intermediate: 9, 
+    intermediate: 12, 
     advanced: 7
   },
   formations: {
