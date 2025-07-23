@@ -85,7 +85,7 @@ const DebugStack = styled(Text)`
 
 const RetryButton = styled(TouchableOpacity)`
   background-color: ${({ theme }) => theme.colors.primary};
-  padding: ${({ theme }) => theme.spacing.medium} ${({ theme }) => theme.spacing.extraLarge};
+  padding: ${({ theme }) => theme.spacing.medium} ${({ theme }) => theme.spacing.xxl};
   border-radius: ${({ theme }) => theme.borderRadius.small};
   transition: all 0.2s ease;
   
