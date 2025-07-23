@@ -6,6 +6,30 @@ import { CulturalTheme } from '../theme/CulturalTheme';
 import { DanceLessonPlayer } from '../components/DanceLessonPlayer';
 import { ceiliDances, getDancesByDifficulty, CeiliDance } from '../data/ceiliDances';
 
+// YouTube video mappings for each dance
+const danceVideoMappings: Record<string, {
+  frontView: string;
+  sideView?: string;
+  overhead?: string;
+  musicVideo?: string;
+  stepTimings?: number[]; // Custom start times for each step in the video
+}> = {
+  'walls-of-limerick': {
+    frontView: 'aINBVlT5Qs8', // The Walls of Limerick instruction video
+    // Based on the video, we can set more accurate step timings later
+    stepTimings: [0, 45, 90, 135], // Rough estimates, can be fine-tuned
+  },
+  // 
+  // To add more videos, use this format:
+  // 'dance-id': {
+  //   frontView: 'YOUTUBE_VIDEO_ID',
+  //   sideView: 'OPTIONAL_SIDE_VIEW_ID', 
+  //   overhead: 'OPTIONAL_OVERHEAD_VIEW_ID',
+  //   musicVideo: 'OPTIONAL_MUSIC_VIDEO_ID',
+  //   stepTimings: [0, 30, 60, 90], // Optional: custom timings for each step
+  // },
+};
+
 interface DanceLesson extends CeiliDance {
   videoStreams: {
     frontView: string; // YouTube video IDs
@@ -19,22 +43,28 @@ interface DanceLesson extends CeiliDance {
 const mapDanceToLesson = (dance: CeiliDance): DanceLesson => ({
   ...dance,
   // Convert steps from old format to new format
-  steps: dance.steps.map((step: any, index: number) => ({
-    stepNumber: index + 1,
-    name: typeof step.name === 'object' ? step.name.english : step.name,
-    description: step.description,
-    videoSegment: {
-      startTime: index * 30, // 30 seconds per step
-      endTime: (index + 1) * 30,
-    },
-    culturalNote: step.tips ? step.tips[0] : undefined,
-  })),
+  steps: dance.steps.map((step: any, index: number) => {
+    const customTimings = danceVideoMappings[dance.id]?.stepTimings;
+    const startTime = customTimings?.[index] ?? index * 30;
+    const endTime = customTimings?.[index + 1] ?? (index + 1) * 30;
+    
+    return {
+      stepNumber: index + 1,
+      name: typeof step.name === 'object' ? step.name.english : step.name,
+      description: step.description,
+      videoSegment: {
+        startTime,
+        endTime,
+      },
+      culturalNote: step.tips ? step.tips[0] : undefined,
+    };
+  }),
   videoStreams: {
-    frontView: `${dance.id}_front`, // Replace with actual YouTube video IDs
-    sideView: `${dance.id}_side`,
-    overhead: `${dance.id}_overhead`,
+    frontView: danceVideoMappings[dance.id]?.frontView || `${dance.id}_front`,
+    sideView: danceVideoMappings[dance.id]?.sideView || `${dance.id}_side`,
+    overhead: danceVideoMappings[dance.id]?.overhead || `${dance.id}_overhead`,
   },
-  musicVideo: `${dance.id}_music`, // YouTube music video ID
+  musicVideo: danceVideoMappings[dance.id]?.musicVideo || `${dance.id}_music`,
   completed: false,
 });
 
