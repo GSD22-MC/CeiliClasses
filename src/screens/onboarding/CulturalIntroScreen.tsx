@@ -1,12 +1,11 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { useNavigation } from '@react-navigation/native';
-import { CulturalTheme } from '../../theme/CulturalTheme';
 import { View, Text, TouchableOpacity, ScrollView } from '../../components/ui';
 
 const Container = styled(View)`
   flex: 1;
-  background-color: ${CulturalTheme.colors.background};
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 const ContentScrollView = styled(ScrollView)`
@@ -17,42 +16,42 @@ const ContentScrollView = styled(ScrollView)`
 const Title = styled(Text)`
   font-size: 28px;
   font-weight: bold;
-  color: ${CulturalTheme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
   text-align: center;
   margin-bottom: 24px;
 `;
 
 const Subtitle = styled(Text)`
   font-size: 18px;
-  color: ${CulturalTheme.colors.onSurface};
+  color: ${({ theme }) => theme.colors.onSurface};
   text-align: center;
   margin-bottom: 32px;
   line-height: 24px;
 `;
 
 const InfoCard = styled(View)`
-  background-color: ${CulturalTheme.colors.surface};
+  background-color: ${({ theme }) => theme.colors.surface};
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 16px;
-  border-left: 4px solid ${CulturalTheme.colors.primary};
+  border-left: 4px solid ${({ theme }) => theme.colors.primary};
 `;
 
 const InfoTitle = styled(Text)`
   font-size: 16px;
   font-weight: 600;
-  color: ${CulturalTheme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
   margin-bottom: 8px;
 `;
 
 const InfoText = styled(Text)`
   font-size: 14px;
-  color: ${CulturalTheme.colors.onSurface};
+  color: ${({ theme }) => theme.colors.onSurface};
   line-height: 20px;
 `;
 
 const ContinueButton = styled(TouchableOpacity)`
-  background-color: ${CulturalTheme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.primary};
   padding: 16px 32px;
   border-radius: 8px;
   align-items: center;
@@ -60,7 +59,7 @@ const ContinueButton = styled(TouchableOpacity)`
 `;
 
 const ContinueButtonText = styled(Text)`
-  color: ${CulturalTheme.colors.onPrimary};
+  color: ${({ theme }) => theme.colors.onPrimary};
   font-size: 16px;
   font-weight: 600;
 `;

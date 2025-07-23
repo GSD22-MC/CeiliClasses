@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { useNavigation } from '@react-navigation/native';
-import { CulturalTheme } from '../../theme/CulturalTheme';
 import { View, Text, TouchableOpacity, ScrollView } from '../../components/ui';
 import { PronunciationButton } from '../../components/PronunciationButton';
 
 const Container = styled(View)`
   flex: 1;
-  background-color: ${CulturalTheme.colors.background};
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 const ContentScrollView = styled(ScrollView)`
@@ -18,21 +17,21 @@ const ContentScrollView = styled(ScrollView)`
 const Title = styled(Text)`
   font-size: 28px;
   font-weight: bold;
-  color: ${CulturalTheme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
   text-align: center;
   margin-bottom: 16px;
 `;
 
 const Subtitle = styled(Text)`
   font-size: 16px;
-  color: ${CulturalTheme.colors.onSurface};
+  color: ${({ theme }) => theme.colors.onSurface};
   text-align: center;
   margin-bottom: 32px;
   line-height: 22px;
 `;
 
 const PronunciationCard = styled(View)`
-  background-color: ${CulturalTheme.colors.surface};
+  background-color: ${({ theme }) => theme.colors.surface};
   padding: 24px;
   border-radius: 12px;
   margin-bottom: 24px;
@@ -42,20 +41,20 @@ const PronunciationCard = styled(View)`
 const IrishWord = styled(Text)`
   font-size: 36px;
   font-weight: bold;
-  color: ${CulturalTheme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
   margin-bottom: 8px;
 `;
 
 const PhoneticText = styled(Text)`
   font-size: 24px;
-  color: ${CulturalTheme.colors.secondary};
+  color: ${({ theme }) => theme.colors.secondary};
   margin-bottom: 16px;
   font-style: italic;
 `;
 
 const MeaningText = styled(Text)`
   font-size: 16px;
-  color: ${CulturalTheme.colors.onSurface};
+  color: ${({ theme }) => theme.colors.onSurface};
   text-align: center;
   margin-bottom: 20px;
 `;
@@ -76,7 +75,7 @@ const ContinueButton = styled(TouchableOpacity)<{ enabled: boolean }>`
 `;
 
 const ContinueButtonText = styled(Text)`
-  color: ${CulturalTheme.colors.onPrimary};
+  color: ${({ theme }) => theme.colors.onPrimary};
   font-size: 16px;
   font-weight: 600;
 `;

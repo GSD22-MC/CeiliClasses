@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { useNavigation } from '@react-navigation/native';
-import { CulturalTheme } from '../../theme/CulturalTheme';
 import { View, Text, TouchableOpacity, ScrollView } from '../../components/ui';
 import { useAuthStore } from '../../stores/authStore';
 
 const Container = styled(View)`
   flex: 1;
-  background-color: ${CulturalTheme.colors.background};
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 const ContentScrollView = styled(ScrollView)`
@@ -18,21 +17,21 @@ const ContentScrollView = styled(ScrollView)`
 const Title = styled(Text)`
   font-size: 28px;
   font-weight: bold;
-  color: ${CulturalTheme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
   text-align: center;
   margin-bottom: 16px;
 `;
 
 const Subtitle = styled(Text)`
   font-size: 16px;
-  color: ${CulturalTheme.colors.onSurface};
+  color: ${({ theme }) => theme.colors.onSurface};
   text-align: center;
   margin-bottom: 32px;
   line-height: 22px;
 `;
 
 const QuestionCard = styled(View)`
-  background-color: ${CulturalTheme.colors.surface};
+  background-color: ${({ theme }) => theme.colors.surface};
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 24px;
@@ -41,27 +40,27 @@ const QuestionCard = styled(View)`
 const QuestionText = styled(Text)`
   font-size: 16px;
   font-weight: 600;
-  color: ${CulturalTheme.colors.onSurface};
+  color: ${({ theme }) => theme.colors.onSurface};
   margin-bottom: 16px;
   line-height: 22px;
 `;
 
 const AnswerButton = styled(TouchableOpacity)<{ selected: boolean }>`
-  background-color: ${props => props.selected ? CulturalTheme.colors.primaryContainer : CulturalTheme.colors.background};
+  background-color: ${({ selected, theme }) => selected ? theme.colors.primaryContainer : theme.colors.background};
   padding: 12px 16px;
   border-radius: 8px;
   margin-bottom: 8px;
-  border: 1px solid ${props => props.selected ? CulturalTheme.colors.primary : CulturalTheme.colors.outline};
+  border: 1px solid ${({ selected, theme }) => selected ? theme.colors.primary : theme.colors.outline};
 `;
 
 const AnswerText = styled(Text)<{ selected: boolean }>`
   font-size: 14px;
-  color: ${props => props.selected ? CulturalTheme.colors.primary : CulturalTheme.colors.onSurface};
+  color: ${({ selected, theme }) => selected ? theme.colors.primary : theme.colors.onSurface};
   font-weight: ${props => props.selected ? '600' : '400'};
 `;
 
 const ContinueButton = styled(TouchableOpacity)<{ enabled: boolean }>`
-  background-color: ${props => props.enabled ? CulturalTheme.colors.primary : CulturalTheme.colors.outline};
+  background-color: ${({ enabled, theme }) => enabled ? theme.colors.primary : theme.colors.outline};
   padding: 16px 32px;
   border-radius: 8px;
   align-items: center;
@@ -69,7 +68,7 @@ const ContinueButton = styled(TouchableOpacity)<{ enabled: boolean }>`
 `;
 
 const ContinueButtonText = styled(Text)`
-  color: ${CulturalTheme.colors.onPrimary};
+  color: ${({ theme }) => theme.colors.onPrimary};
   font-size: 16px;
   font-weight: 600;
 `;
@@ -118,6 +117,7 @@ const culturalQuestions: Question[] = [
 
 const CulturalConfidenceScreen: React.FC = () => {
   const navigation = useNavigation();
+  const theme = useTheme();
   const updateCulturalConfidence = useAuthStore(state => state.updateCulturalConfidence);
   const [answers, setAnswers] = useState<Record<string, number>>({});
 
@@ -164,7 +164,7 @@ const CulturalConfidenceScreen: React.FC = () => {
         <View style={{ padding: 16, marginTop: 16 }}>
           <Text style={{ 
             fontSize: 14, 
-            color: CulturalTheme.colors.onSurface, 
+            color: theme.colors.onSurface, 
             textAlign: 'center',
             lineHeight: 20
           }}>

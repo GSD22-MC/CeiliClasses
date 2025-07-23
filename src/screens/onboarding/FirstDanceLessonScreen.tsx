@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { useNavigation } from '@react-navigation/native';
-import { CulturalTheme } from '../../theme/CulturalTheme';
 import { View, Text, TouchableOpacity, ScrollView } from '../../components/ui';
 import { DanceFormation3D } from '../../components/DanceFormation3D';
 
 const Container = styled(View)`
   flex: 1;
-  background-color: ${CulturalTheme.colors.background};
+  background-color: ${({ theme }) => theme.colors.background};
 `;
 
 const ContentScrollView = styled(ScrollView)`
@@ -18,14 +17,14 @@ const ContentScrollView = styled(ScrollView)`
 const Title = styled(Text)`
   font-size: 28px;
   font-weight: bold;
-  color: ${CulturalTheme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
   text-align: center;
   margin-bottom: 16px;
 `;
 
 const Subtitle = styled(Text)`
   font-size: 16px;
-  color: ${CulturalTheme.colors.onSurface};
+  color: ${({ theme }) => theme.colors.onSurface};
   text-align: center;
   margin-bottom: 24px;
   line-height: 22px;
@@ -42,13 +41,13 @@ const DanceCard = styled(TouchableOpacity)<{ selected: boolean }>`
 const DanceName = styled(Text)`
   font-size: 18px;
   font-weight: 600;
-  color: ${CulturalTheme.colors.primary};
+  color: ${({ theme }) => theme.colors.primary};
   margin-bottom: 8px;
 `;
 
 const DanceDescription = styled(Text)`
   font-size: 14px;
-  color: ${CulturalTheme.colors.onSurface};
+  color: ${({ theme }) => theme.colors.onSurface};
   line-height: 20px;
 `;
 
@@ -68,7 +67,7 @@ const ContinueButton = styled(TouchableOpacity)<{ enabled: boolean }>`
 `;
 
 const ContinueButtonText = styled(Text)`
-  color: ${CulturalTheme.colors.onPrimary};
+  color: ${({ theme }) => theme.colors.onPrimary};
   font-size: 16px;
   font-weight: 600;
 `;

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import { View, Text, ScrollView, TouchableOpacity, SafeAreaView } from '../components/ui';
 import { CulturalCard } from '../components/ui/CulturalCard';
-import { CulturalTheme } from '../theme/CulturalTheme';
 import { culturalArticles, irishRegions, getArticlesByCategory, CulturalArticle } from '../data/culturalContent';
 
 const culturalFacts = [
@@ -25,12 +24,7 @@ const culturalFacts = [
 ];
 
 const categoryColors = {
-  history: CulturalTheme.colors.primary,
-  traditions: CulturalTheme.colors.secondary,
-  music: CulturalTheme.colors.tertiary,
-  language: CulturalTheme.colors.tertiary,
-  regions: CulturalTheme.colors.primary,
-  festivals: CulturalTheme.colors.secondary,
+  // These will be moved to component level with theme access
 };
 
 // Styled components for consistent theming
@@ -247,6 +241,7 @@ const FooterText = styled(Text)`
 `;
 
 export const HeritageScreen: React.FC = () => {
+  const theme = useTheme();
   const [selectedArticle, setSelectedArticle] = useState<CulturalArticle | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -354,12 +349,12 @@ export const HeritageScreen: React.FC = () => {
                 title={region.name.english}
                 irishTitle={region.name.irish}
               >
-                <Text style={{ marginBottom: CulturalTheme.spacing.small }}>
+                <Text style={{ marginBottom: theme.spacing.small }}>
                   {region.description}
                 </Text>
                 <Text style={{ 
                   fontSize: '12px', 
-                  color: CulturalTheme.colors.primary, 
+                  color: theme.colors.primary, 
                   fontWeight: '500' 
                 }}>
                   Traditional Dances: {region.traditionalDances.length} dances
